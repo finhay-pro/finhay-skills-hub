@@ -1,0 +1,41 @@
+{
+  "name": "finhay-skills-hub",
+  "version": "1.0.0",
+  "description": "Agent skills for the Finhay Securities Open API — stock prices, funds, gold, macro data, trading accounts, portfolios, and orders",
+  "keywords": [
+    "claude-code",
+    "skills",
+    "finhay",
+    "stock",
+    "market",
+    "trading",
+    "vietnam",
+    "finance",
+    "securities",
+    "portfolio",
+    "gold",
+    "fund",
+    "macro"
+  ],
+  "author": {
+    "name": "Finhay Securities",
+    "url": "https://fhsc.com.vn/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finhay-pro/finhay-skills-hub.git"
+  },
+  "homepage": "https://fhsc.com.vn/",
+  "files": [
+    "skills/",
+    "CLAUDE.md",
+    ".claude-plugin/"
+  ],
+  "scripts": {
+    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-trading\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

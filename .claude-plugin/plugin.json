@@ -1,0 +1,21 @@
+{
+  "name": "finhay-skills-hub",
+  "version": "1.0.0",
+  "skills": [
+    "./skills/"
+  ],
+  "keywords": [
+    "skills",
+    "finhay",
+    "stock",
+    "market",
+    "trading",
+    "vietnam",
+    "finance",
+    "securities",
+    "portfolio",
+    "gold",
+    "fund",
+    "macro"
+  ]
+}

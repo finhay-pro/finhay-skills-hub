@@ -1,0 +1,45 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "finhay-skills-hub",
+  "description": "Agent skills for the Finhay Securities Open API — stock prices, funds, gold, macro data, trading accounts, portfolios, and orders",
+  "owner": {
+    "name": "Finhay Securities"
+  },
+  "metadata": {
+    "description": "Finhay skills for Vietnamese stock market data and personal brokerage account queries via Finhay Securities Open API"
+  },
+  "plugins": [
+    {
+      "name": "finhay-skills-hub",
+      "source": "./",
+      "description": "2 skills — market data (stocks, funds, gold, silver, crypto, macro, charts) and trading account data (balances, portfolio, orders, PnL)",
+      "version": "1.0.0",
+      "author": {
+        "name": "Finhay Securities"
+      },
+      "homepage": "https://fhsc.com.vn/",
+      "license": "MIT",
+      "keywords": [
+        "skills",
+        "finhay",
+        "stock",
+        "market",
+        "trading",
+        "vietnam",
+        "securities"
+      ],
+      "category": "finance",
+      "tags": [
+        "skills",
+        "stock",
+        "market",
+        "trading",
+        "gold",
+        "fund",
+        "macro",
+        "portfolio"
+      ],
+      "strict": false
+    }
+  ]
+}
