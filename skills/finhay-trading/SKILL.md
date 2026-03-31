@@ -14,7 +14,7 @@ Read-only user and trading data via the Finhay Securities Open API. All requests
 
 ## Pre-flight
 
-See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`, `USER_ID`.
+See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. `USER_ID` is auto-resolved.
 
 ### Sub-account setup
 
@@ -37,7 +37,7 @@ When a request requires `{subAccountId}`, **ask the user which sub-account type*
 source ~/.finhay/credentials/.env
 
 # User profile
-./_shared/scripts/request.sh GET "/internal/users/$USER_ID/profile"
+./_shared/scripts/request.sh GET "/account/users/$USER_ID/profile"
 
 # Trading — use SUB_ACCOUNT_NORMAL or SUB_ACCOUNT_MARGIN based on user choice
 ./_shared/scripts/request.sh GET "/trading/accounts/$SUB_ACCOUNT_NORMAL/summary"
@@ -51,7 +51,7 @@ source ~/.finhay/credentials/.env
 
 | Endpoint | Path param | Key params | Res key |
 |----------|------------|------------|---------|
-| `/internal/users/{userId}/profile` | `USER_ID` | — | `result` |
+| `/account/users/{userId}/profile` | `USER_ID` | — | `result` |
 | `/trading/accounts/{subAccountId}/summary` | ask user | — | `result` |
 | `/trading/sub-accounts/{subAccountId}/asset-summary` | ask user | — | `data` |
 | `/trading/sub-accounts/{subAccountId}/orders` | ask user | `fromDate`, `toDate` | `result` |
@@ -73,4 +73,3 @@ See [shared constraints](./_shared/constraints.md), plus:
 - `fromDate` and `toDate` are always required for the orders endpoint.
 - Substitute path params before signing.
 - When `{subAccountId}` is needed, ask the user to choose between NORMAL and MARGIN, then use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`.
-- `/internal/users/{userId}/profile` is an internal API — service-to-service only.

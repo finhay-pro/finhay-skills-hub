@@ -20,19 +20,20 @@ if (!apiKey || !apiSecret) { console.error("ERROR: FINHAY_API_KEY and FINHAY_API
 const timestamp = String(Date.now());
 const signature = crypto.createHmac("sha256", apiSecret).update(`${timestamp}\n${method}\n${endpoint}\n`).digest("hex");
 
-fetch(`${baseUrl}${endpoint}${query ? `?${query}` : ""}`, {
-  method,
-  headers: {
-    "X-FH-APIKEY": apiKey,
-    "X-FH-TIMESTAMP": timestamp,
-    "X-FH-NONCE": crypto.randomBytes(16).toString("hex"),
-    "X-FH-SIGNATURE": signature,
-  },
-  signal: AbortSignal.timeout(30000),
-}).then(async (res) => {
+(async () => {
+  const res = await fetch(`${baseUrl}${endpoint}${query ? `?${query}` : ""}`, {
+    method,
+    headers: {
+      "X-FH-APIKEY": apiKey,
+      "X-FH-TIMESTAMP": timestamp,
+      "X-FH-NONCE": crypto.randomBytes(16).toString("hex"),
+      "X-FH-SIGNATURE": signature,
+    },
+    signal: AbortSignal.timeout(30000),
+  });
   const body = await res.text();
   if (res.status >= 400) { console.error(`ERROR: HTTP ${res.status}\n${body}`); process.exit(1); }
   const json = JSON.parse(body);
   if (json.error_code && json.error_code !== "0") { console.error(`ERROR: error_code=${json.error_code}\n${body}`); process.exit(1); }
   process.stdout.write(body);
-}).catch((e) => { console.error(`ERROR: ${e.message}`); process.exit(1); });
+})().catch((e) => { console.error(`ERROR: ${e.message}`); process.exit(1); });

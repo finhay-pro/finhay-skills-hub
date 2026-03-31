@@ -19,9 +19,9 @@ Required:
 - `FINHAY_API_SECRET` — 64-character hex string
 
 Skill-specific:
-- `USER_ID` — required for trading endpoints. Not needed for market endpoints.
+- `USER_ID` — auto-resolved via `infer-sub-account.js` if not set.
 
-If missing, tell the user:
+If credentials are missing, tell the user:
 
 ```bash
 mkdir -p ~/.finhay/credentials
@@ -29,7 +29,6 @@ cat > ~/.finhay/credentials/.env << 'EOF'
 FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
 FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
 FINHAY_BASE_URL=https://open-api.fhsc.com.vn
-USER_ID=123456
 EOF
 chmod 600 ~/.finhay/credentials/.env
 ```
