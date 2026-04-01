@@ -10,10 +10,26 @@ const RAW = `https://raw.githubusercontent.com/${REPO}/${BRANCH}`;
 const API = `https://api.github.com/repos/${REPO}`;
 const TTL = 12 * 60 * 60 * 1000;
 
+const skillsDir = (dir) => {
+  try {
+    return path.basename(dir) === "skills";
+  } catch {
+    return false;
+  }
+};
+
 const nSkill = process.argv[2];
 if (!nSkill) { console.error("Usage: sync.sh <skill>"); process.exit(1); }
 
-const ROOT = path.resolve(__dirname, "../../");
+let ROOT = __dirname;
+while (!skillsDir(ROOT)) {
+  const parent = path.dirname(ROOT);
+  if (parent === ROOT) {
+    console.error("Error: Could not find skills directory in the path hierarchy.");
+    process.exit(1);
+  }
+  ROOT = parent;
+}
 const SKILL_DIR = path.join(ROOT, nSkill);
 const SHARED_DIR = path.join(ROOT, "_shared");
 const REF_ENV = path.join(os.homedir(), ".finhay/ref/.env");
@@ -87,7 +103,7 @@ const replaceDir = (src, dest) => {
   const sharedKey = `SHARED_SYNC_AT`;
   if (!env[sharedKey] || now - env[sharedKey] > TTL) {
     const ver = await _content(`${RAW}/skills/_shared/.version`);
-    const files = tree.tree.filter(f => f.type==="blob" && f.path.startsWith("skills/_shared/")).map(f=>f.path);
+    const files = tree.tree.filter(f => f.type === "blob" && f.path.startsWith("skills/_shared/")).map(f => f.path);
 
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "sync-sh-"));
     await downloader(files, tmp);
@@ -102,17 +118,12 @@ const replaceDir = (src, dest) => {
   const skillKey = `SKILL_${nSkill.toUpperCase()}_SYNC_AT`;
   if (!env[skillKey] || now - env[skillKey] > TTL) {
     const ver = await _content(`${RAW}/skills/${nSkill}/.version`);
-    const files = tree.tree.filter(f => f.type==="blob" && f.path.startsWith(`skills/${nSkill}/`)).map(f=>f.path);
+    const files = tree.tree.filter(f => f.type === "blob" && f.path.startsWith(`skills/${nSkill}/`)).map(f => f.path);
 
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), `sync-${nSkill}-`));
     await downloader(files, tmp);
     replaceDir(path.join(tmp, nSkill), SKILL_DIR);
-
-    const link = path.join(SKILL_DIR, "_shared");
-    try { fs.rmSync(link, { recursive: true, force: true }); fs.symlinkSync("../_shared", link); }
-    catch { fs.cpSync(SHARED_DIR, link, { recursive:true }); }
-
-    fs.rmSync(tmp, { recursive:true, force:true });
+    fs.rmSync(tmp, { recursive: true, force: true });
 
     env[skillKey] = now;
     console.log(`${nSkill}: synced (${ver})`);
