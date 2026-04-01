@@ -35,7 +35,21 @@ chmod 600 ~/.finhay/credentials/.env
 
 ## 3. Skill version
 
-Run once per session to check for updates:
+```bash
+cat ~/.finhay/ref/.env
+```
+
+If ref are missing, just do it:
+```bash
+mkdir -p ~/.finhay/ref
+cat > ~/.finhay/ref/.env << 'EOF'
+SHARED_SYNC_AT=0
+SKILL_FINHAY-TRADING_SYNC_AT=0
+SKILL_FINHAY-MARKET_SYNC_AT=0
+EOF
+```
+
+Then check sync to keep skills up to date:
 
 ```bash
 ./_shared/scripts/sync.sh {skill-name}
