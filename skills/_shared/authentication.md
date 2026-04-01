@@ -37,6 +37,15 @@ FINHAY_BASE_URL=https://open-api.fhsc.com.vn
 
 Query params are **not** signed.
 
+## Setup Endpoints
+
+Used internally by setup scripts.
+
+| Endpoint | Description | Response key |
+|----------|-------------|--------------|
+| `GET /auth/v1/openapi/api-keys/{apiKey}/owner` | Resolve `userId` from API key | `data.userId` |
+| `GET /account/users/{userId}/profile` | Resolve sub-accounts | `result.sub_accounts` |
+
 ## Rate Limits
 
 Per API key, 60-second sliding window:
