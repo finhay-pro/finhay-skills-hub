@@ -10,7 +10,6 @@ Source: `~/.finhay/credentials/.env`
 FINHAY_API_KEY=ak_test_...
 FINHAY_API_SECRET=64_char_hex_secret
 FINHAY_BASE_URL=https://open-api.fhsc.com.vn
-USER_ID=123456
 ```
 
 | Variable | Required | Description |
@@ -18,7 +17,6 @@ USER_ID=123456
 | `FINHAY_API_KEY` | Yes | `X-FH-APIKEY` header |
 | `FINHAY_API_SECRET` | Yes | HMAC-SHA256 signing key |
 | `FINHAY_BASE_URL` | No | Defaults to `https://open-api.fhsc.com.vn` |
-| `USER_ID` | Trading | Profile and PnL endpoints |
 
 ## Headers
 
@@ -52,6 +50,14 @@ Where `BODY_HASH = SHA256(request_body_json)`.
 Additional header: `X-FH-BODYHASH` with the hex-encoded body hash.
 
 The `write-request.sh` script handles this automatically. Use `request.sh` for GET requests and `write-request.sh` for write operations.
+
+## Setup Endpoints
+
+Used internally by setup scripts.
+
+| Endpoint | Description | Response key |
+|----------|-------------|--------------|
+| `GET /users/oa/me` | Resolve owner identity and sub-accounts | `result.uid`, `result.sub_accounts` |
 
 ## Rate Limits
 

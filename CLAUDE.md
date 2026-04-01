@@ -7,7 +7,6 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 - **skills/** — 2 skills (each has `SKILL.md` + endpoint references)
 - **skills/_shared/** — Authentication, constraints, request script
 - **.claude-plugin/** — Plugin metadata
-- **credentials.example** — Template for `~/.finhay/credentials/.env`
 
 ## Skills
 
@@ -19,8 +18,8 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 ## Prerequisites
 
 - `node` >= 18
-- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
-- `USER_ID` also needed for trading skill
+- `dotenv` (`npm install dotenv`)
+- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET` 
 
 ## API Requests
 

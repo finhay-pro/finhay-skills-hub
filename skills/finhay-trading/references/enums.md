@@ -26,7 +26,7 @@ Use these values exactly as documented when building filters or interpreting res
 
 All enum values:
 
-`HOSE` | `HNX` | `UPCOM` | `HCX`
+`HOSE` | `HNX` | `UPCOM`
 
 Use for `/market/session`:
 
@@ -42,7 +42,7 @@ Use for `/market/session`:
 
 ## UserRightRegisterStatus
 
-`UNREGISTER` | `REGISTERED` | `EXPIRED` | `RECEIVED` | `PARTIAL_REGISTERED` | `PENDING` | `PARTIAL_RECEIVED` | `WAIT_REGISTER` | `REGISTERED_V2` | `WAIT_RECEIVE` | `WAIT_STOCK` | `PARTIAL_RECEIVED_V2` | `UNKNOWN`
+`UNREGISTER` | `REGISTERED` | `EXPIRED` | `RECEIVED` | `PARTIAL_REGISTERED` | `PENDING` | `PARTIAL_RECEIVED` | `WAIT_REGISTER` | `REGISTERED_V2` | `WAIT_RECEIVE` | `WAIT_STOCK` | `PARTIAL_RECEIVED_V2`
 
 ---
 
