@@ -1,7 +1,7 @@
 {
   "name": "finhay-skills-hub",
   "version": "1.0.0",
-  "description": "Agent skills for the Finhay Securities Open API — stock prices, funds, gold, macro data, trading accounts, portfolios, and orders",
+  "description": "Agent skills for the Finhay Securities Open API — stock prices, funds, gold, macro data, trading accounts, portfolios, orders, and order execution",
   "keywords": [
     "claude-code",
     "skills",
@@ -33,7 +33,7 @@
     ".claude-plugin/"
   ],
   "scripts": {
-    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-trading\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
+    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-trading, finhay-order-execution\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
   },
   "engines": {
     "node": ">=18"
