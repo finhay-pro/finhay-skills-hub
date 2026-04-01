@@ -19,7 +19,7 @@ Required:
 - `FINHAY_API_SECRET` — 64-character hex string
 
 Skill-specific:
-- `USER_ID` — auto-resolved via `infer-sub-account.js` if not set.
+- `USER_ID` — populated by `infer-sub-account.sh` for trading flows that require it (for example PnL). Not needed for market endpoints.
 
 If credentials are missing, tell the user:
 
@@ -33,7 +33,17 @@ EOF
 chmod 600 ~/.finhay/credentials/.env
 ```
 
-## 3. Request script
+## 3. Skill version
+
+Run once per session to check for updates:
+
+```bash
+./_shared/scripts/sync.sh {skill-name}
+```
+
+If a newer version is found, the script syncs automatically.
+
+## 4. Request script
 
 ```bash
 ../_shared/scripts/request.sh METHOD PATH [QUERY]

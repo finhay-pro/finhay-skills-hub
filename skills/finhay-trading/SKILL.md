@@ -1,6 +1,6 @@
 ---
 name: finhay-trading
-description: "User profile, account balances, portfolio, orders, and profit/loss. Use when user asks about their profile, trading account, stock holdings, order history, or today's PnL."
+description: "Owner identity, account balances, portfolio, orders, and profit/loss. Use when user asks about their account identity, trading account, stock holdings, order history, or today's PnL."
 license: MIT
 metadata:
   author: Finhay Securities
@@ -14,17 +14,17 @@ Read-only user and trading data via the Finhay Securities Open API. All requests
 
 ## Pre-flight
 
-See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. `USER_ID` is auto-resolved.
+See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. `USER_ID` is populated by `infer-sub-account.sh`.
 
 ### Sub-account setup
 
-Run once after credentials are configured — this fetches all sub-accounts from the user profile and saves them to `.env`:
+Run once after credentials are configured — this fetches owner identity and all sub-accounts, then saves them to `.env`:
 
 ```bash
 ./_shared/scripts/infer-sub-account.sh
 ```
 
-This writes `SUB_ACCOUNT_NORMAL` and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env`.
+This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env`.
 
 ## Making a Request
 
@@ -36,8 +36,8 @@ When a request requires `{subAccountId}`, **ask the user which sub-account type*
 # Load credentials
 source ~/.finhay/credentials/.env
 
-# User profile
-./_shared/scripts/request.sh GET "/account/users/$USER_ID/profile"
+# Owner
+./_shared/scripts/request.sh GET "/users/oa/me"
 
 # Trading — use SUB_ACCOUNT_NORMAL or SUB_ACCOUNT_MARGIN based on user choice
 ./_shared/scripts/request.sh GET "/trading/accounts/$SUB_ACCOUNT_NORMAL/summary"
@@ -51,7 +51,7 @@ source ~/.finhay/credentials/.env
 
 | Endpoint | Path param | Key params | Res key |
 |----------|------------|------------|---------|
-| `/account/users/{userId}/profile` | `USER_ID` | — | `result` |
+| `/users/oa/me` | — | — | `result` |
 | `/trading/accounts/{subAccountId}/summary` | ask user | — | `result` |
 | `/trading/sub-accounts/{subAccountId}/asset-summary` | ask user | — | `data` |
 | `/trading/sub-accounts/{subAccountId}/orders` | ask user | `fromDate`, `toDate` | `result` |
@@ -71,5 +71,4 @@ Details & response shapes: [references/endpoints.md](./references/endpoints.md).
 See [shared constraints](./_shared/constraints.md), plus:
 
 - `fromDate` and `toDate` are always required for the orders endpoint.
-- Substitute path params before signing.
 - When `{subAccountId}` is needed, ask the user to choose between NORMAL and MARGIN, then use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`.

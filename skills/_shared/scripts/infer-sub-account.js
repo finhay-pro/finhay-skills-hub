@@ -1,33 +1,53 @@
+#!/usr/bin/env node
+
 const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
-const credPath = path.join(process.env.HOME, ".finhay/credentials/.env");
-const get = (env, key) => env.match(new RegExp(`^${key}=(.+)$`, "m"))?.[1];
-const save = (env, key, value) =>
-  env.split("\n").filter(l => !l.startsWith(`${key}=`)).concat(`${key}=${value}`).filter(Boolean).join("\n") + "\n";
-const run = (...args) => JSON.parse(execFileSync("node", [path.join(__dirname, "request.js"), ...args], { encoding: "utf8" }));
+const pCred = path.join(process.env.HOME, ".finhay/credentials/.env");
 
-try {
-  let env = fs.readFileSync(credPath, "utf8");
+// load .env
+try { require("dotenv").config({ path: pCred }); }
+catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
 
-  let userId = get(env, "USER_ID");
-  if (!userId) {
-    const apiKey = get(env, "FINHAY_API_KEY");
+// ===== helpers =====
+const saveEnv = (env, key, value) =>
+  env
+    .split("\n")
+    .filter(l => !l.startsWith(`${key}=`))
+    .concat(`${key}=${value}`)
+    .filter(Boolean)
+    .join("\n") + "\n";
+
+const writeEnv = (p, data) => { fs.writeFileSync(p + ".tmp", data); fs.renameSync(p + ".tmp", p); }
+
+const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirname, "request.js"), ...args], { encoding: "utf8" }));
+const upperCase = str => String(str).toUpperCase();
+
+// ===== main =====
+(async () => {
+  let env = fs.existsSync(pCred) ? fs.readFileSync(pCred, "utf8") : "";
+
+  let uid = process.env.USER_ID;
+  if (!uid) {
+    const apiKey = process.env.FINHAY_API_KEY;
     if (!apiKey) { console.error("ERROR: FINHAY_API_KEY required"); process.exit(1); }
 
-    const owner = run("GET", `/auth/v1/openapi/api-keys/${apiKey}/owner`);
-    if (!owner.data?.userId) { console.error("ERROR: userId missing in response"); process.exit(1); }
-
-    userId = String(owner.data.userId);
-    env = save(env, "USER_ID", userId);
-    fs.writeFileSync(credPath, env);
+    const owner = request("GET", `/users/oa/me`);
+    const ownerData = owner.result;
+    uid = ownerData?.uid;
+    const subAccounts = ownerData?.sub_accounts || [];
+    if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
+    env = saveEnv(env, "USER_ID", uid);
+    subAccounts.forEach(sba => {
+      const subAccountType = sba.type || "unknown";
+      env = saveEnv(env, `SUB_ACCOUNT_${upperCase(subAccountType)}`, sba.id);
+      env = saveEnv(env, `SUB_ACCOUNT_EXT_${upperCase(subAccountType)}`, sba.sub_account_ext);
+    });
+    writeEnv(pCred, env);
   }
-
-  const profile = run("GET", `/account/users/${userId}/profile`);
-  const subs = (profile.result || profile).sub_accounts || [];
-  if (!subs.length) { console.error("ERROR: No sub-accounts"); process.exit(1); }
-
-  subs.forEach(a => env = save(env, `SUB_ACCOUNT_${a.account_type}`, a.sub_account_ext));
-  fs.writeFileSync(credPath, env);
-} catch (e) { console.error(`ERROR: ${e.message}`); process.exit(1); }
+  console.log("✅ Credentials updated successfully");
+})().catch(e => {
+  console.error("ERROR:", e.message);
+  process.exit(1);
+});
