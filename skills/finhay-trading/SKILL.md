@@ -72,4 +72,3 @@ See [shared constraints](./_shared/constraints.md), plus:
 
 - `fromDate` and `toDate` are always required for the orders endpoint.
 - When `{subAccountId}` is needed, ask the user to choose between NORMAL and MARGIN, then use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`.
-- `/users/oa/me` is an internal API — service-to-service only.

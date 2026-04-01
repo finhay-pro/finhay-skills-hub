@@ -21,7 +21,7 @@ Required:
 Skill-specific:
 - `USER_ID` — populated by `infer-sub-account.sh` for trading flows that require it (for example PnL). Not needed for market endpoints.
 
-If missing, tell the user:
+If credentials are missing, tell the user:
 
 ```bash
 mkdir -p ~/.finhay/credentials
