@@ -11,7 +11,7 @@ const API = `https://api.github.com/repos/${REPO}`;
 const TTL = 12 * 60 * 60 * 1000;
 
 const nSkill = process.argv[2];
-if (!nSkill) { console.error("Usage: sync <skill>"); process.exit(1); }
+if (!nSkill) { console.error("Usage: sync.sh <skill>"); process.exit(1); }
 
 const ROOT = path.resolve(__dirname, "../../");
 const SKILL_DIR = path.join(ROOT, nSkill);
@@ -27,8 +27,22 @@ if (!fs.existsSync(path.join(SKILL_DIR, "SKILL.md"))) {
 try { require("dotenv").config({ path: REF_ENV }); }
 catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
 
+const readRefEnv = () => {
+  if (!fs.existsSync(REF_ENV)) return {};
+  return Object.fromEntries(
+    fs.readFileSync(REF_ENV, "utf8")
+      .split("\n")
+      .filter(Boolean)
+      .filter(line => !line.trim().startsWith("#"))
+      .map(line => {
+        const idx = line.indexOf("=");
+        return idx === -1 ? [line, ""] : [line.slice(0, idx), line.slice(idx + 1)];
+      })
+  );
+};
+
 const saveEnv = (env) => {
-  const data = Object.entries(env).map(([k,v])=>`${k}=${v}`).join("\n") + "\n";
+  const data = Object.entries(env).map(([k, v]) => `${k}=${v}`).join("\n") + "\n";
   fs.mkdirSync(path.dirname(REF_ENV), { recursive: true });
   fs.writeFileSync(REF_ENV + ".tmp", data);
   fs.renameSync(REF_ENV + ".tmp", REF_ENV);
@@ -48,7 +62,9 @@ const _json = async (url) => {
 
 const downloader = async (files, tmp) => {
   for (const f of files) {
-    const buf = await fetch(`${RAW}/${f}`).then(r => r.arrayBuffer());
+    const res = await fetch(`${RAW}/${f}`, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) throw new Error(`Failed to download ${f}: HTTP ${res.status}`);
+    const buf = await res.arrayBuffer();
     const dest = path.join(tmp, f.replace("skills/", ""));
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, Buffer.from(buf));
@@ -67,7 +83,7 @@ const replaceDir = (src, dest) => {
   const tree = await _json(`${API}/git/trees/${BRANCH}?recursive=1`);
 
   // ---- sync _shared ----
-  const env = { ...process.env };
+  const env = readRefEnv();
   const sharedKey = `SHARED_SYNC_AT`;
   if (!env[sharedKey] || now - env[sharedKey] > TTL) {
     const ver = await _content(`${RAW}/skills/_shared/.version`);
@@ -93,7 +109,7 @@ const replaceDir = (src, dest) => {
     replaceDir(path.join(tmp, nSkill), SKILL_DIR);
 
     const link = path.join(SKILL_DIR, "_shared");
-    try { fs.rmSync(link, { force:true }); fs.symlinkSync("../_shared", link); }
+    try { fs.rmSync(link, { recursive: true, force: true }); fs.symlinkSync("../_shared", link); }
     catch { fs.cpSync(SHARED_DIR, link, { recursive:true }); }
 
     fs.rmSync(tmp, { recursive:true, force:true });

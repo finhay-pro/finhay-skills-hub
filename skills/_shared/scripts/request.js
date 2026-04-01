@@ -5,7 +5,7 @@ try { require("dotenv").config({ path: path.join(process.env.HOME, ".finhay/cred
 catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
 
 const [method, endpoint, query] = process.argv.slice(2);
-if (!method || !endpoint) { console.error("Usage: request.js METHOD PATH [QUERY]"); process.exit(1); }
+if (!method || !endpoint) { console.error("Usage: request.sh METHOD PATH [QUERY]"); process.exit(1); }
 
 const { FINHAY_API_KEY: apiKey, FINHAY_API_SECRET: apiSecret } = process.env;
 const baseUrl = process.env.FINHAY_BASE_URL || "https://open-api.fhsc.com.vn";
@@ -26,7 +26,13 @@ fetch(`${baseUrl}${endpoint}${query ? `?${query}` : ""}`, {
 }).then(async (res) => {
   const body = await res.text();
   if (res.status >= 400) { console.error(`ERROR: HTTP ${res.status}\n${body}`); process.exit(1); }
-  const json = JSON.parse(body);
+  let json;
+  try {
+    json = JSON.parse(body);
+  } catch {
+    console.error(`ERROR: Non-JSON response for ${method} ${endpoint}\n${body}`);
+    process.exit(1);
+  }
   if (json.error_code && json.error_code !== "0") { console.error(`ERROR: error_code=${json.error_code}\n${body}`); process.exit(1); }
   process.stdout.write(body);
 }).catch((e) => { console.error(`ERROR: ${e.message}`); process.exit(1); });

@@ -32,13 +32,16 @@ const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirnam
     const apiKey = process.env.FINHAY_API_KEY;
     if (!apiKey) { console.error("ERROR: FINHAY_API_KEY required"); process.exit(1); }
 
-    const owner = request("GET", `/accounts-agent/v1/openapi/api-keys/owner`);
-    const subAccounts = owner.data?.sub_accounts || [];
-    env = saveEnv(env, "USER_ID", owner.data?.uid);
+    const owner = request("GET", `/users/oa/me`);
+    const ownerData = owner.result;
+    uid = ownerData?.uid;
+    const subAccounts = ownerData?.sub_accounts || [];
+    if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
+    env = saveEnv(env, "USER_ID", uid);
     subAccounts.forEach(sba => {
       env = saveEnv(env, `SUB_ACCOUNT_${sba.type}`, sba.id);
+      env = saveEnv(env, `SUB_ACCOUNT_EXT_${sba.type}`, sba.sub_account_ext);
     });
-    if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
     writeEnv(pCred, env);
   }
   console.log("✅ Credentials updated successfully");
