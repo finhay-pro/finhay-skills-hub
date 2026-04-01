@@ -43,8 +43,7 @@ Used internally by setup scripts.
 
 | Endpoint | Description | Response key |
 |----------|-------------|--------------|
-| `GET /auth/v1/openapi/api-keys/{apiKey}/owner` | Resolve `userId` from API key | `data.userId` |
-| `GET /account/users/{userId}/profile` | Resolve sub-accounts | `result.sub_accounts` |
+| `GET /users/oa/me` | Resolve owner identity and sub-accounts | `result.uid`, `result.sub_accounts` |
 
 ## Rate Limits
 
