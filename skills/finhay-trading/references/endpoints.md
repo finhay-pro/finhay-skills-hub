@@ -1,27 +1,44 @@
 # Trading Endpoints
 
-Signing: see [authentication.md](../_shared/authentication.md). Query params are not signed.
+Signing: see [authentication.md](../../_shared/authentication.md). Query params are not signed.
 
 ## Config
 
 From `~/.finhay/credentials/.env`:
 
 - `USER_ID` — required for profile and PnL endpoints
-- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — written by [infer-sub-account.sh](../_shared/scripts/infer-sub-account.sh), used as `{subAccountId}`
+- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — written by [infer-sub-account.sh](../../_shared/scripts/infer-sub-account.sh), used as `{subAccountId}`
+- `CUST_ID` — required for order execution (place/cancel)
 
 ## Errors
 
-`400` = invalid request, `401` = auth failure, `429` = rate limited.
+`400` = invalid request, `401` = auth failure, `403` = scope/IP denied, `429` = rate limited.
 
 Common causes: missing API key, wrong path prefix, missing `USER_ID`, missing `fromDate`/`toDate` for orders, path mismatch in signature.
+
+Order-level errors are returned in `result[].code` and `result[].rejected_reason`. See [error-codes.md](./error-codes.md).
 
 ## Path Versions
 
 `v1` = order book, `v2` = portfolio, `v5` = user rights. No prefix = original API. Always use exact versions below.
 
+## Signing for Write Operations
+
+Write operations use a **different signing payload** than GET requests. The body hash is included:
+
+```
+{TIMESTAMP}\n{METHOD}\n{PATH}\n{BODY_HASH}
+```
+
+Where `BODY_HASH = SHA256(request_body_json)`. The `X-FH-BODYHASH` header is also sent. The `write-request.sh` script handles this automatically.
+
+## Endpoint Versioning
+
+Write operations use the `/trading/oa/` prefix **without** version numbers (e.g. `/trading/oa/sub-accounts/...`). This differs from read endpoints which use versioned prefixes like `/trading/v1/`, `/trading/v2/`, or `/trading/v5/`. Do not add version numbers to write paths.
+
 ## Response Keys
 
-- `result` — user-profile, account-summary, orders, order-book (list), user-rights, market-session
+- `result` — user-profile, account-summary, orders, order-book (list), user-rights, market-session, order execution
 - `data` — asset-summary, order-book (detail), portfolio, pnl-today
 
 ---
@@ -70,3 +87,27 @@ Common causes: missing API key, wrong path prefix, missing `USER_ID`, missing `f
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
 | 10 | GET | `/trading/market/session` | `exchange` | `result` | [detail](./endpoints/market-session.md) |
+
+---
+
+## Order Execution (Write)
+
+All three endpoints return data in the `result` key as an array of order results.
+
+### Place Order
+
+| # | Method | Path | Body | Res key | Detail |
+|---|--------|------|------|---------|--------|
+| 11 | POST | `/trading/oa/sub-accounts/{subAccountId}/orders` | sub_account, cus_id, side, symbol, quantity, type, limit_price, market_price, stock_type | `result` | [detail](./endpoints/place-order.md) |
+
+### Modify Order
+
+| # | Method | Path | Body | Res key | Detail |
+|---|--------|------|------|---------|--------|
+| 12 | PUT | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | quantity, price, channel | `result` | [detail](./endpoints/modify-order.md) |
+
+### Cancel Order
+
+| # | Method | Path | Body | Res key | Detail |
+|---|--------|------|------|---------|--------|
+| 13 | DELETE | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | sub_account, cus_id, channel | `result` | [detail](./endpoints/cancel-order.md) |

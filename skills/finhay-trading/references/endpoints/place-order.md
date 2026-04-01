@@ -1,6 +1,6 @@
 # Place Order
 
-## `POST /trading/oa/sub-accounts/{accountId}/orders`
+## `POST /trading/oa/sub-accounts/{subAccountId}/orders`
 
 Place a new stock order on the exchange.
 
@@ -9,14 +9,14 @@ Place a new stock order on the exchange.
 ### OpenAPI Spec
 
 ```yaml
-/trading/oa/sub-accounts/{accountId}/orders:
+/trading/oa/sub-accounts/{subAccountId}/orders:
   post:
     summary: Place a new order
     operationId: createOrder
     tags:
       - Order Execution
     parameters:
-      - name: accountId
+      - name: subAccountId
         in: path
         required: true
         description: Sub-account ID (e.g. "0881234567")
@@ -54,8 +54,8 @@ Place a new stock order on the exchange.
 
 ### Config Required
 
-- `{accountId}` — use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`
-- `sub_account` in body — same value as `{accountId}`
+- `{subAccountId}` — use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`
+- `sub_account` in body — same value as `{subAccountId}`
 - `cus_id` in body — customer ID from user profile
 
 ### Components
@@ -96,8 +96,8 @@ components:
         limit_price:
           type: integer
           format: int64
-          description: "Limit price in API units (human price × 1000). Required when type=LIMIT. Example: 25,500 VND → 25500000"
-          example: 25500000
+          description: "Limit price in VND. Required when type=LIMIT. Example: 25,500 VND → 25500"
+          example: 25500
         market_price:
           type: string
           enum: [MP, ATO, ATC, MAK, MOK, MTL, PLO, FOK, FAK]
@@ -167,7 +167,7 @@ components:
 
 ### Notes
 
-- **Price encoding**: `limit_price` = human price × 1000. Example: stock price 25,500 VND → `limit_price: 25500000`. Always confirm both values with the user.
+- **Price encoding**: `limit_price` = price in VND. Example: stock price 25,500 VND → `limit_price: 25500`. No multiplication needed.
 - **type determines price field**: If `type=LIMIT`, use `limit_price`. If `type=MARKET`, use `market_price` (e.g. `MP`, `ATO`, `ATC`).
 - **stock_type**: Default `STOCK` for equities. Use `BOND` for bonds, `ETF` for ETFs, etc.
 - **Lot size**: HOSE/HNX round lots are 100 shares. Orders of 1-99 shares are odd lots (`ODD`) with limited order types (LO only).

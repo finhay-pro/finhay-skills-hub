@@ -1,6 +1,6 @@
 # Cancel Order
 
-## `DELETE /trading/oa/sub-accounts/{accountId}/orders/{orderId}`
+## `DELETE /trading/oa/sub-accounts/{subAccountId}/orders/{orderId}`
 
 Cancel an existing order. Note: this is a DELETE request **with a body**.
 
@@ -9,14 +9,14 @@ Cancel an existing order. Note: this is a DELETE request **with a body**.
 ### OpenAPI Spec
 
 ```yaml
-/trading/oa/sub-accounts/{accountId}/orders/{orderId}:
+/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}:
   delete:
     summary: Cancel an existing order
     operationId: cancelOrder
     tags:
       - Order Execution
     parameters:
-      - name: accountId
+      - name: subAccountId
         in: path
         required: true
         description: Sub-account ID
@@ -60,7 +60,7 @@ Cancel an existing order. Note: this is a DELETE request **with a body**.
 
 ### Config Required
 
-- `{accountId}` — from `.env`
+- `{subAccountId}` — from `.env`
 - `{orderId}` — must be obtained from order-book query first
 
 ### Components
@@ -89,7 +89,7 @@ components:
 
 ### Notes
 
-- **Pre-check required**: Before cancelling, query the order detail (`GET /trading/v1/accounts/{accountId}/order-book/{orderId}`) and verify the order is in a cancellable status.
+- **Pre-check required**: Before cancelling, query the order detail (`GET /trading/v1/accounts/{subAccountId}/order-book/{orderId}`) and verify the order is in a cancellable status.
 - **Cancellable statuses**: Generally `SENT`, `WAITING_TO_SEND`. Orders that are `MATCHED`, `MATCHED_ALL`, `CANCELLED`, `COMPLETED`, `FAILED` cannot be cancelled.
 - **Partially matched orders**: If partially matched, cancellation applies only to the unmatched portion.
 - **DELETE with body**: This endpoint requires a request body despite being a DELETE method. The `write-request.sh` script handles this correctly.

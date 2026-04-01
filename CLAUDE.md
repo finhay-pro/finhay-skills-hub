@@ -4,7 +4,7 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 
 ## Architecture
 
-- **skills/** — 3 skills (each has `SKILL.md` + endpoint references)
+- **skills/** — 2 skills (each has `SKILL.md` + endpoint references)
 - **skills/_shared/** — Authentication, constraints, request script
 - **.claude-plugin/** — Plugin metadata
 - **credentials.example** — Template for `~/.finhay/credentials/.env`
@@ -14,8 +14,7 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
 | finhay-market | Stock prices, funds, gold, crypto, macro indicators, charts | Prices, rates, market data |
-| finhay-trading | User profile, balance, portfolio, orders, PnL, user rights, market session | Profile, trading account, holdings, order history |
-| finhay-order-execution | **DESTRUCTIVE** — Place, modify, cancel stock orders | Only when user explicitly asks to trade |
+| finhay-trading | User profile, balance, portfolio, orders, PnL, user rights, market session, and order execution (place/modify/cancel) | Profile, trading account, holdings, order history, place/modify/cancel orders |
 
 ## Prerequisites
 

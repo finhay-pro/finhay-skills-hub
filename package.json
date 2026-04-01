@@ -33,7 +33,7 @@
     ".claude-plugin/"
   ],
   "scripts": {
-    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-trading, finhay-order-execution\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
+    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-trading\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
   },
   "engines": {
     "node": ">=18"

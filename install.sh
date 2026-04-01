@@ -6,7 +6,7 @@ HUB_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="${1:-$(pwd)}"
 OUT_DIR="$PROJECT_DIR/.agent/skills"
 
-SKILLS=(finhay-market finhay-trading finhay-order-execution)
+SKILLS=(finhay-market finhay-trading)
 
 mkdir -p "$OUT_DIR"
 

@@ -7,8 +7,7 @@ Agent skills for the [Finhay Securities](https://fhsc.com.vn/) Open API. Works w
 | Skill | Description |
 |-------|-------------|
 | `finhay-market` | Stock prices, funds, gold, crypto, macro indicators, charts |
-| `finhay-trading` | User profile, account balance, portfolio, orders, PnL, market session |
-| `finhay-order-execution` | **DESTRUCTIVE** — Place, modify, cancel stock orders (requires explicit confirmation) |
+| `finhay-trading` | User profile, account balance, portfolio, orders, PnL, market session, and order execution (place, modify, cancel orders) |
 
 ## Install
 
