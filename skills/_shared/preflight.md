@@ -34,7 +34,17 @@ EOF
 chmod 600 ~/.finhay/credentials/.env
 ```
 
-## 3. Request script
+## 3. Skill version
+
+Run once per session to check for updates:
+
+```bash
+./_shared/scripts/sync.sh {skill-name}
+```
+
+If a newer version is found, the script syncs automatically.
+
+## 4. Request script
 
 ```bash
 ../_shared/scripts/request.sh METHOD PATH [QUERY]

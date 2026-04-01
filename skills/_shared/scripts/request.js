@@ -1,14 +1,8 @@
 const crypto = require("crypto");
-const fs = require("fs");
 const path = require("path");
 
-const credPath = path.join(process.env.HOME, ".finhay/credentials/.env");
-if (fs.existsSync(credPath)) {
-  for (const line of fs.readFileSync(credPath, "utf8").split("\n")) {
-    const m = line.match(/^([A-Z_]+)=(.+)$/);
-    if (m && !process.env[m[1]]) process.env[m[1]] = m[2];
-  }
-}
+try { require("dotenv").config({ path: path.join(process.env.HOME, ".finhay/credentials/.env") }); }
+catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
 
 const [method, endpoint, query] = process.argv.slice(2);
 if (!method || !endpoint) { console.error("Usage: request.js METHOD PATH [QUERY]"); process.exit(1); }

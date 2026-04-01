@@ -1,6 +1,6 @@
 # User Profile
 
-## `GET /internal/users/{userId}/profile`
+## `GET /account/users/{userId}/profile`
 
 User identity and sub-accounts.
 

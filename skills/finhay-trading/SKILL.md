@@ -71,6 +71,5 @@ Details & response shapes: [references/endpoints.md](./references/endpoints.md).
 See [shared constraints](./_shared/constraints.md), plus:
 
 - `fromDate` and `toDate` are always required for the orders endpoint.
-- Substitute path params before signing.
 - When `{subAccountId}` is needed, ask the user to choose between NORMAL and MARGIN, then use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`.
 - `/internal/users/{userId}/profile` is an internal API — service-to-service only.

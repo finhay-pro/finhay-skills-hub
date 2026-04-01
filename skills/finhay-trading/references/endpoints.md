@@ -30,7 +30,7 @@ Common causes: missing API key, wrong path prefix, missing `USER_ID`, missing `f
 
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
-| 1 | GET | `/internal/users/{userId}/profile` | — | `result` | [detail](./endpoints/user-profile.md) |
+| 1 | GET | `/account/users/{userId}/profile` | — | `result` | [detail](./endpoints/user-profile.md) |
 
 ## Account
 
