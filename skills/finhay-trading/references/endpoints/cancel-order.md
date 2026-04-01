@@ -60,7 +60,8 @@ Cancel an existing order. Note: this is a DELETE request **with a body**.
 
 ### Config Required
 
-- `{subAccountId}` — from `.env`
+- `{subAccountId}` — use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`
+- `sub_account` in body — use `SUB_ACCOUNT_EXT_NORMAL` or `SUB_ACCOUNT_EXT_MARGIN` from `.env`
 - `{orderId}` — must be obtained from order-book query first
 
 ### Components
@@ -70,21 +71,12 @@ components:
   schemas:
     CancelOrderRequest:
       type: object
-      required: [sub_account, cus_id]
+      required: [sub_account]
       properties:
         sub_account:
           type: string
-          description: Sub-account ID (same as path accountId)
+          description: Sub-account ID (same as path subAccountId)
           example: "0881234567"
-        cus_id:
-          type: string
-          description: Customer ID
-          example: "088C123456"
-        channel:
-          type: string
-          enum: [ONLINE, MOBILE_ANDROID, MOBILE_IOS, INTERNAL]
-          description: Channel. Default ONLINE.
-          default: ONLINE
 ```
 
 ### Notes

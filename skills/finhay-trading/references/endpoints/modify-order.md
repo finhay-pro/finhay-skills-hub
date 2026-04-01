@@ -80,11 +80,6 @@ components:
           type: integer
           format: int64
           description: "New limit price in VND"
-        channel:
-          type: string
-          enum: [ONLINE, MOBILE_ANDROID, MOBILE_IOS, INTERNAL]
-          description: Channel. Default ONLINE.
-          default: ONLINE
 ```
 
 ### Notes

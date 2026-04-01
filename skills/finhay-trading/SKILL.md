@@ -71,9 +71,7 @@ Ask the user explicitly for every required field. **Never assume or default** si
 
 Before calling the write API, verify via read endpoints:
 
-- **Market session**: `GET /trading/market/session?exchange=HOSE` — reject if session is closed.
-- **Place BUY**: `GET /trading/accounts/{subAccountId}/summary` — check buying power is sufficient (quantity x price).
-- **Place SELL**: `GET /trading/v2/sub-accounts/{subAccountId}/portfolio` — check user holds enough shares of the symbol.
+- **Place BUY/SELL**: `GET /trading/sub-accounts/{subAccountId}/trade-info?symbol={symbol}&side={BUY|SELL}&quote_price={price}` — for BUY: check `pp0` (buying power) >= quantity x price. For SELL: check `available_quantity` >= quantity.
 - **Modify/Cancel**: `GET /trading/v1/accounts/{subAccountId}/order-book/{orderId}` — check the order exists and is in a modifiable/cancellable status.
 
 Use `request.sh` (read-only script) for these checks.
@@ -137,17 +135,17 @@ source ~/.finhay/credentials/.env
 # Place order
 ../_shared/scripts/write-request.sh POST \
   "/trading/oa/sub-accounts/$SUB_ACCOUNT_NORMAL/orders" \
-  '{"sub_account":"'"$SUB_ACCOUNT_NORMAL"'","cus_id":"'"$CUST_ID"'","side":"BUY","symbol":"HPG","quantity":100,"type":"LIMIT","limit_price":25500,"stock_type":"STOCK"}'
+  '{"sub_account":"'"$SUB_ACCOUNT_EXT_NORMAL"'","side":"BUY","symbol":"HPG","quantity":100,"type":"LIMIT","limit_price":25500,"stock_type":"STOCK"}'
 
 # Modify order
 ../_shared/scripts/write-request.sh PUT \
   "/trading/oa/sub-accounts/$SUB_ACCOUNT_NORMAL/orders/ORDER_ID" \
-  '{"quantity":200,"price":26000,"channel":"ONLINE"}'
+  '{"quantity":200,"price":26000}'
 
 # Cancel order
 ../_shared/scripts/write-request.sh DELETE \
   "/trading/oa/sub-accounts/$SUB_ACCOUNT_NORMAL/orders/ORDER_ID" \
-  '{"sub_account":"'"$SUB_ACCOUNT_NORMAL"'","cus_id":"'"$CUST_ID"'","channel":"ONLINE"}'
+  '{"sub_account":"'"$SUB_ACCOUNT_EXT_NORMAL"'"}'
 
 # Dry run (preview request without sending)
 ../_shared/scripts/write-request.sh POST \
@@ -168,6 +166,7 @@ source ~/.finhay/credentials/.env
 | `/trading/v2/sub-accounts/{subAccountId}/portfolio` | ask user | — | `data` |
 | `/trading/pnl-today/{userId}` | `USER_ID` | — | `data` |
 | `/trading/v5/account/{subAccountId}/user-rights` | ask user | — | `result` |
+| `/trading/sub-accounts/{subAccountId}/trade-info` | ask user | `symbol`, `side`, `quote_price` | `result` |
 | `/trading/market/session` | — | `exchange` | `result` |
 
 Path versions (`v1`, `v2`, `v5`) are historical — always use the exact version above.
@@ -176,9 +175,9 @@ Path versions (`v1`, `v2`, `v5`) are historical — always use the exact version
 
 | # | Method | Path | Body fields | Res key |
 |---|--------|------|-------------|---------|
-| 1 | POST | `/trading/oa/sub-accounts/{subAccountId}/orders` | sub_account, cus_id, side, symbol, quantity, type, limit_price/market_price, stock_type | `result` |
-| 2 | PUT | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | quantity, price, channel | `result` |
-| 3 | DELETE | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | sub_account, cus_id, channel | `result` |
+| 1 | POST | `/trading/oa/sub-accounts/{subAccountId}/orders` | sub_account, side, symbol, quantity, type, limit_price/market_price, stock_type | `result` |
+| 2 | PUT | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | quantity, price | `result` |
+| 3 | DELETE | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | sub_account | `result` |
 
 Details & response shapes: [references/endpoints.md](./references/endpoints.md). Enums: [references/enums.md](./references/enums.md). Error codes: [references/error-codes.md](./references/error-codes.md). Safety details: [references/safety.md](./references/safety.md).
 
@@ -188,13 +187,9 @@ See [shared constraints](../_shared/constraints.md), plus:
 
 - `fromDate` and `toDate` are always required for the orders endpoint.
 - When `{subAccountId}` is needed, ask the user to choose between NORMAL and MARGIN, then use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`.
-<<<<<<< HEAD
-- `/internal/users/{userId}/profile` is an internal API — service-to-service only.
 - **Write-enabled** — this skill overrides the shared "read-only" constraint for order execution. Uses `write-request.sh` for POST/PUT/DELETE.
 - **One order per confirmation cycle** — never batch multiple orders. Complete the full 5-step protocol for each.
 - **Price encoding** — `limit_price` = price in VND (e.g. 25500 for 25,500 VND). No multiplication needed.
 - **Channel** — default to `ONLINE` unless the user specifies otherwise.
 - **Credential safety** — never display full keys; mask with `********`. Never send credentials outside the configured `BASE_URL`.
 - **Production detection** — if API key starts with `ak_live_`, add a `⚠ PRODUCTION` warning to every confirmation.
-=======
->>>>>>> main

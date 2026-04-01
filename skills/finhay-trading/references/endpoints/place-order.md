@@ -55,8 +55,7 @@ Place a new stock order on the exchange.
 ### Config Required
 
 - `{subAccountId}` — use `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` from `.env`
-- `sub_account` in body — same value as `{subAccountId}`
-- `cus_id` in body — customer ID from user profile
+- `sub_account` in body — use `SUB_ACCOUNT_EXT_NORMAL` or `SUB_ACCOUNT_EXT_MARGIN` from `.env` (written by `infer-sub-account.sh`)
 
 ### Components
 
@@ -70,11 +69,7 @@ components:
         sub_account:
           type: string
           description: Sub-account ID
-          example: "0881234567"
-        cus_id:
-          type: string
-          description: Customer ID
-          example: "088C123456"
+          example: "120C000008.1"
         side:
           type: string
           enum: [BUY, SELL]
