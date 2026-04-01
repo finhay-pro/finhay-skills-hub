@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "finhay-market": {
+      "source": "/Users/macbookpro/IdeaProjects/finhay-skills-hub",
+      "sourceType": "local",
+      "computedHash": "b6833ed9ba46ddf1b83684aae133702785da9b25486fbfa05f530e99592901a7"
+    },
+    "finhay-order-execution": {
+      "source": "/Users/macbookpro/IdeaProjects/finhay-skills-hub",
+      "sourceType": "local",
+      "computedHash": "1cd34da0dec06e35a29f1fef068f034d26fa84c776f8f2766218fb628f44cedc"
+    },
+    "finhay-trading": {
+      "source": "/Users/macbookpro/IdeaProjects/finhay-skills-hub",
+      "sourceType": "local",
+      "computedHash": "922bcc857dfcafba0c4a2313165e504d0540bc6b1efca913ff1a031e0a7cca61"
+    }
+  }
+}
