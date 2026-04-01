@@ -22,6 +22,7 @@ const saveEnv = (env, key, value) =>
 const writeEnv = (p, data) => { fs.writeFileSync(p + ".tmp", data); fs.renameSync(p + ".tmp", p); }
 
 const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirname, "request.js"), ...args], { encoding: "utf8" }));
+const upperCase = str => String(str).toUpperCase();
 
 // ===== main =====
 (async () => {
@@ -39,8 +40,9 @@ const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirnam
     if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
     env = saveEnv(env, "USER_ID", uid);
     subAccounts.forEach(sba => {
-      env = saveEnv(env, `SUB_ACCOUNT_${sba.type}`, sba.id);
-      env = saveEnv(env, `SUB_ACCOUNT_EXT_${sba.type}`, sba.sub_account_ext);
+      const subAccountType = sba.type || "unknown";
+      env = saveEnv(env, `SUB_ACCOUNT_${upperCase(subAccountType)}`, sba.id);
+      env = saveEnv(env, `SUB_ACCOUNT_EXT_${upperCase(subAccountType)}`, sba.sub_account_ext);
     });
     writeEnv(pCred, env);
   }
