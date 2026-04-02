@@ -91,12 +91,14 @@ components:
         limit_price:
           type: integer
           format: int64
-          description: "Limit price in VND. Required when type=LIMIT. Example: 25,500 VND → 25500"
+          nullable: true
+          description: "Limit price in VND. Set when type=LIMIT, null when type=MARKET."
           example: 25500
         market_price:
           type: string
+          nullable: true
           enum: [MP, ATO, ATC, MAK, MOK, MTL, PLO, FOK, FAK]
-          description: Market price type. Required when type=MARKET.
+          description: "Market price type. Set when type=MARKET, null when type=LIMIT."
         stock_type:
           type: string
           enum: [STOCK, BOND, FUND_CERTIFICATE, WARRANT, ETF]
@@ -163,7 +165,7 @@ components:
 ### Notes
 
 - **Price encoding**: `limit_price` = price in VND. Example: stock price 25,500 VND → `limit_price: 25500`. No multiplication needed.
-- **type determines price field**: If `type=LIMIT`, use `limit_price`. If `type=MARKET`, use `market_price` (e.g. `MP`, `ATO`, `ATC`).
+- **type determines price field**: Both `limit_price` and `market_price` are always present in the body. When `type=LIMIT`: set `limit_price` to price in VND, set `market_price` to `null`. When `type=MARKET`: set `market_price` to the market price type (e.g. `ATC`, `ATO`, `MP`), set `limit_price` to `null`.
 - **stock_type**: Default `STOCK` for equities. Use `BOND` for bonds, `ETF` for ETFs, etc.
 - **Lot size**: HOSE/HNX round lots are 100 shares. Orders of 1-99 shares are odd lots (`ODD`) with limited order types (LO only).
 - **Order type by exchange**: HOSE supports LO/MP/ATO/ATC. HNX supports LO/MTL/MOK/MAK/PLO/ATC. UPCOM supports LO only.
