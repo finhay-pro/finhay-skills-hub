@@ -52,8 +52,8 @@ Use for `/market/session`:
 
 `LIMIT` | `MARKET`
 
-- `LIMIT` → use `limit_price` field (price in VND)
-- `MARKET` → use `market_price` field (see MarketPrice enum)
+- `LIMIT` → set `limit_price` (price in VND), set `market_price` to `null`
+- `MARKET` → set `market_price` (e.g. `ATC`, `ATO`, `MP`), set `limit_price` to `null`
 
 ## MarketPrice
 
