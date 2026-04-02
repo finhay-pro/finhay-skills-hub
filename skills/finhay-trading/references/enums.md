@@ -24,13 +24,9 @@ Use these values exactly as documented when building filters or interpreting res
 
 ## Exchange
 
-All enum values:
+`HOSE` | `HNX` | `UPCOM` | `HCX`
 
-`HOSE` | `HNX` | `UPCOM`
-
-Use for `/market/session`:
-
-`HOSE` | `HNX` | `UPCOM`
+- `HCX` — Vietnam Bond Exchange (added post-KRX migration, May 2025)
 
 ## UserRightStatus
 
@@ -61,23 +57,52 @@ Use for `/market/session`:
 
 | Value | Name | Description |
 |-------|------|-------------|
-| `MP` | Market Price | Match at best available price |
+| `MP` | Market Price | Match at best available price (HOSE only, converted to MTL by ORS) |
 | `ATO` | At The Open | Match at opening session |
 | `ATC` | At The Close | Match at closing session |
-| `MAK` | Make or Kill | Fill partially or cancel entirely |
-| `MOK` | Moment or Kill | Fill completely or cancel entirely |
+| `MAK` | Make or Kill | Fill partially or cancel entirely (HNX, converted to FAK by ORS) |
+| `MOK` | Moment or Kill | Fill completely or cancel entirely (HNX, converted to FOK by ORS) |
 | `MTL` | Moment To Limit | Fill at market then convert remainder to limit |
-| `PLO` | Post Limit Order | Limit order after ATC session (HNX only) |
-| `FOK` | Fill or Kill | Fill completely or cancel entirely |
-| `FAK` | Fill and Kill | Fill partially, cancel remainder |
+| `PLO` | Post Limit Order | Limit order after ATC session (HNX post-session only) |
+| `FOK` | Fill or Kill | Fill completely or cancel entirely (ORS representation of MOK) |
+| `FAK` | Fill and Kill | Fill partially, cancel remainder (ORS representation of MAK) |
+
+### ORS conversion (post-KRX, May 2025)
+
+The system automatically converts order types to ORS standard:
+- HOSE `MP` → ORS `MTL`
+- HNX `MAK` → ORS `FAK`
+- HNX `MOK` → ORS `FOK`
+
+You can send the original type (MP, MAK, MOK) — the backend converts automatically.
 
 ### Order types by exchange
 
 | Exchange | Supported |
 |----------|-----------|
-| HOSE | LO, MP, ATO, ATC |
+| HOSE | LO, MP, ATO, ATC, MTL |
 | HNX | LO, MTL, MOK, MAK, PLO, ATC |
 | UPCOM | LO only |
+| HCX | LO only |
+
+### Order types by session (HOSE)
+
+| Session | Supported |
+|---------|-----------|
+| OPEN | LO, MP, ATO, ATC |
+| PROGRESS | LO, MP, ATC |
+| BREAK | LO, MP, ATC |
+| PRE_CLOSED | LO, ATC |
+| CA | LO |
+
+### Order types by session (HNX)
+
+| Session | Supported |
+|---------|-----------|
+| OPEN / PROGRESS / BREAK | LO, MTL, MOK, MAK, ATC |
+| PRE_CLOSED | LO, ATC |
+| POST_SESSION | PLO |
+| CA | LO |
 
 ## Channel
 
