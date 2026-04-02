@@ -13,7 +13,7 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 | Skill | Purpose | When to Use |
 |-------|---------|-------------|
 | finhay-market | Stock prices, funds, gold, crypto, macro indicators, charts | Prices, rates, market data |
-| finhay-trading | User profile, balance, portfolio, orders, PnL, user rights, market session | Profile, trading account, holdings, order history |
+| finhay-trading | User profile, balance, portfolio, orders, PnL, user rights, market session, and order execution (place/modify/cancel) | Profile, trading account, holdings, order history, place/modify/cancel orders |
 
 ## Prerequisites
 
