@@ -168,5 +168,5 @@ components:
 - **type determines price field**: Both `limit_price` and `market_price` are always present in the body. When `type=LIMIT`: set `limit_price` to price in VND, set `market_price` to `null`. When `type=MARKET`: set `market_price` to the market price type (e.g. `ATC`, `ATO`, `MP`), set `limit_price` to `null`.
 - **stock_type**: Default `STOCK` for equities. Use `BOND` for bonds, `ETF` for ETFs, etc.
 - **Lot size**: HOSE/HNX round lots are 100 shares. Orders of 1-99 shares are odd lots (`ODD`) with limited order types (LO only).
-- **Order type by exchange**: HOSE supports LO/MP/ATO/ATC. HNX supports LO/MTL/MOK/MAK/PLO/ATC. UPCOM supports LO only.
+- **Order type by exchange** (post-KRX, May 2025): HOSE supports LO/MP/ATO/ATC/MTL. HNX supports LO/MTL/MOK/MAK/PLO/ATC. UPCOM and HCX support LO only. ORS auto-converts: HOSE MP→MTL, HNX MAK→FAK, HNX MOK→FOK.
 - A successful response does not guarantee execution — the order enters the exchange queue. Check order-book for final status.
