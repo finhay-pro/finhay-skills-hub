@@ -1,8 +1,7 @@
 const crypto = require("crypto");
-const path = require("path");
+const { CREDENTIALS_ENV, loadEnv } = require("./env-utils");
 
-try { require("dotenv").config({ path: path.join(process.env.HOME, ".finhay/credentials/.env") }); }
-catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
+loadEnv(CREDENTIALS_ENV);
 
 const [method, endpoint, query] = process.argv.slice(2);
 if (!method || !endpoint) { console.error("Usage: request.sh METHOD PATH [QUERY]"); process.exit(1); }
