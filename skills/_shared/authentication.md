@@ -37,6 +37,20 @@ FINHAY_BASE_URL=https://open-api.fhsc.com.vn
 
 Query params are **not** signed.
 
+## Write Operation Signing
+
+For POST, PUT, DELETE requests (used by `write-request.sh`), the signing payload includes the body hash:
+
+```
+{TIMESTAMP}\n{METHOD}\n{PATH}\n{BODY_HASH}
+```
+
+Where `BODY_HASH = SHA256(request_body_json)`.
+
+Additional header: `X-FH-BODYHASH` with the hex-encoded body hash.
+
+The `write-request.sh` script handles this automatically. Use `request.sh` for GET requests and `write-request.sh` for write operations.
+
 ## Setup Endpoints
 
 Used internally by setup scripts.
