@@ -50,9 +50,10 @@ const headers = {
 };
 
 if (dryRun) {
+  const maskedHeaders = { ...headers, "X-FH-APIKEY": headers["X-FH-APIKEY"].slice(0, 8) + "********" };
   console.log("=== DRY RUN ===");
   console.log(`${method.toUpperCase()} ${url}`);
-  console.log("Headers:", JSON.stringify(headers, null, 2));
+  console.log("Headers:", JSON.stringify(maskedHeaders, null, 2));
   console.log("Body:", bodyJson);
   console.log("Signing payload:", JSON.stringify(payload));
   console.log("Body hash:", bodyHash);
@@ -68,7 +69,10 @@ fetch(url, {
 }).then(async (res) => {
   const body = await res.text();
   if (res.status >= 400) { console.error(`ERROR: HTTP ${res.status}\n${body}`); process.exit(1); }
-  const json = JSON.parse(body);
+  let json;
+  try { json = JSON.parse(body); } catch {
+    console.error(`ERROR: Non-JSON response\n${body}`); process.exit(1);
+  }
   if (json.error_code && json.error_code !== "0" && json.error_code !== null) {
     console.error(`ERROR: error_code=${json.error_code}\n${body}`); process.exit(1);
   }

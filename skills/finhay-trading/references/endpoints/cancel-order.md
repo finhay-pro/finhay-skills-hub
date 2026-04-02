@@ -75,8 +75,8 @@ components:
       properties:
         sub_account:
           type: string
-          description: Sub-account ID (same as path subAccountId)
-          example: "0881234567"
+          description: Extended sub-account ID (use SUB_ACCOUNT_EXT_NORMAL or SUB_ACCOUNT_EXT_MARGIN from .env)
+          example: "120C000008.1"
 ```
 
 ### Notes

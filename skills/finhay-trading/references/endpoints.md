@@ -6,7 +6,8 @@ Signing: see [authentication.md](../../_shared/authentication.md). Query params 
 
 From `~/.finhay/credentials/.env`:
 - `USER_ID` — required for PnL endpoints; written by `infer-sub-account.sh` after fetching owner info
-- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — written by [infer-sub-account.sh](../_shared/scripts/infer-sub-account.sh), used as `{subAccountId}`
+- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — written by [infer-sub-account.sh](../../_shared/scripts/infer-sub-account.sh), used as `{subAccountId}` in path
+- `SUB_ACCOUNT_EXT_NORMAL`, `SUB_ACCOUNT_EXT_MARGIN` — written by `infer-sub-account.sh`, used as `sub_account` in request body (order execution)
 
 ## Errors
 
@@ -72,25 +73,25 @@ Write operations use the `/trading/oa/` prefix **without** version numbers (e.g.
 
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
-| 7 | GET | `/trading/v2/sub-accounts/{subAccountId}/portfolio` | — | `data` | [detail](./endpoints/portfolio.md) |
+| 8 | GET | `/trading/v2/sub-accounts/{subAccountId}/portfolio` | — | `data` | [detail](./endpoints/portfolio.md) |
 
 ## PnL
 
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
-| 8 | GET | `/trading/pnl-today/{userId}` | — | `data` | [detail](./endpoints/pnl-today.md) |
+| 9 | GET | `/trading/pnl-today/{userId}` | — | `data` | [detail](./endpoints/pnl-today.md) |
 
 ## User Rights
 
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
-| 9 | GET | `/trading/v5/account/{subAccountId}/user-rights` | — | `result` | [detail](./endpoints/user-rights.md) |
+| 10 | GET | `/trading/v5/account/{subAccountId}/user-rights` | — | `result` | [detail](./endpoints/user-rights.md) |
 
 ## Market Session
 
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
-| 10 | GET | `/trading/market/session` | `exchange` | `result` | [detail](./endpoints/market-session.md) |
+| 11 | GET | `/trading/market/session` | `exchange` | `result` | [detail](./endpoints/market-session.md) |
 
 ---
 
@@ -102,16 +103,16 @@ All three endpoints return data in the `result` key as an array of order results
 
 | # | Method | Path | Body | Res key | Detail |
 |---|--------|------|------|---------|--------|
-| 11 | POST | `/trading/oa/sub-accounts/{subAccountId}/orders` | sub_account, side, symbol, quantity, type, limit_price, market_price, stock_type | `result` | [detail](./endpoints/place-order.md) |
+| 12 | POST | `/trading/oa/sub-accounts/{subAccountId}/orders` | sub_account, side, symbol, quantity, type, limit_price, market_price, stock_type | `result` | [detail](./endpoints/place-order.md) |
 
 ### Modify Order
 
 | # | Method | Path | Body | Res key | Detail |
 |---|--------|------|------|---------|--------|
-| 12 | PUT | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | quantity, price | `result` | [detail](./endpoints/modify-order.md) |
+| 13 | PUT | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | quantity, price | `result` | [detail](./endpoints/modify-order.md) |
 
 ### Cancel Order
 
 | # | Method | Path | Body | Res key | Detail |
 |---|--------|------|------|---------|--------|
-| 13 | DELETE | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | sub_account | `result` | [detail](./endpoints/cancel-order.md) |
+| 14 | DELETE | `/trading/oa/sub-accounts/{subAccountId}/orders/{orderId}` | sub_account | `result` | [detail](./endpoints/cancel-order.md) |

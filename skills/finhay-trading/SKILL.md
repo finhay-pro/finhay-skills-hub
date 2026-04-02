@@ -24,7 +24,7 @@ Run once after credentials are configured — this fetches owner identity and al
 ../_shared/scripts/infer-sub-account.sh
 ```
 
-This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env`.
+This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_EXT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN`, `SUB_ACCOUNT_EXT_MARGIN` to `~/.finhay/credentials/.env`.
 
 ## Making a Request
 
