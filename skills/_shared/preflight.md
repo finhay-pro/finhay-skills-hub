@@ -44,8 +44,8 @@ If ref are missing, just do it:
 mkdir -p ~/.finhay/ref
 cat > ~/.finhay/ref/.env << 'EOF'
 SHARED_SYNC_AT=0
-SKILL_FINHAY-TRADING_SYNC_AT=0
-SKILL_FINHAY-MARKET_SYNC_AT=0
+SKILL_FINHAY_TRADING_SYNC_AT=0
+SKILL_FINHAY_MARKET_SYNC_AT=0
 EOF
 ```
 

@@ -1,48 +1,41 @@
 #!/usr/bin/env node
 
-const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
+const {
+  CREDENTIALS_ENV,
+  loadEnv,
+  readEnv,
+  setEnv,
+  writeEnv,
+} = require("./env-utils");
 
-const pCred = path.join(process.env.HOME, ".finhay/credentials/.env");
-
-// load .env
-try { require("dotenv").config({ path: pCred }); }
-catch { console.error("ERROR: dotenv required. Run: npm install dotenv"); process.exit(1); }
+const pCred = CREDENTIALS_ENV;
+loadEnv(pCred);
 
 // ===== helpers =====
-const saveEnv = (env, key, value) =>
-  env
-    .split("\n")
-    .filter(l => !l.startsWith(`${key}=`))
-    .concat(`${key}=${value}`)
-    .filter(Boolean)
-    .join("\n") + "\n";
-
-const writeEnv = (p, data) => { fs.writeFileSync(p + ".tmp", data); fs.renameSync(p + ".tmp", p); }
-
 const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirname, "request.js"), ...args], { encoding: "utf8" }));
 const upperCase = str => String(str).toUpperCase();
 
 // ===== main =====
 (async () => {
-  let env = fs.existsSync(pCred) ? fs.readFileSync(pCred, "utf8") : "";
+  let env = readEnv(pCred);
 
   let uid = process.env.USER_ID;
   if (!uid) {
     const apiKey = process.env.FINHAY_API_KEY;
     if (!apiKey) { console.error("ERROR: FINHAY_API_KEY required"); process.exit(1); }
 
-    const owner = request("GET", `/users/oa/me`);
-    const ownerData = owner.result;
-    uid = ownerData?.uid;
-    const subAccounts = ownerData?.sub_accounts || [];
+    const response = request("GET", `/users/oa/me`);
+    const owner = response.result;
+    uid = owner?.uid;
+    const subAccounts = owner?.sub_accounts || [];
     if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
-    env = saveEnv(env, "USER_ID", uid);
+    env = setEnv(env, "USER_ID", uid);
     subAccounts.forEach(sba => {
       const subAccountType = sba.type || "unknown";
-      env = saveEnv(env, `SUB_ACCOUNT_${upperCase(subAccountType)}`, sba.id);
-      env = saveEnv(env, `SUB_ACCOUNT_EXT_${upperCase(subAccountType)}`, sba.sub_account_ext);
+      env = setEnv(env, `SUB_ACCOUNT_${upperCase(subAccountType)}`, sba.id);
+      env = setEnv(env, `SUB_ACCOUNT_EXT_${upperCase(subAccountType)}`, sba.sub_account_ext);
     });
     writeEnv(pCred, env);
   }
