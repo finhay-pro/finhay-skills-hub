@@ -18,9 +18,6 @@ Required:
 - `FINHAY_API_KEY` — `ak_test_*` or `ak_live_*`
 - `FINHAY_API_SECRET` — 64-character hex string
 
-Skill-specific:
-- `USER_ID` — populated by `infer-sub-account.sh` for trading flows that require it (for example PnL). Not needed for market endpoints.
-
 If credentials are missing, tell the user:
 
 ```bash

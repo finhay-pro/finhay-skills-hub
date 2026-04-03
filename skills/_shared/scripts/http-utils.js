@@ -13,6 +13,14 @@ const json = async (url, timeoutMs = 15000) => {
   return res.json();
 };
 
+const decode = (base64) => {
+  try {
+    return Buffer.from(base64, "base64").toString("utf8");
+  } catch {
+    return null;
+  }
+};
+
 const write = (dest, data) => {
   const temp = `${dest}.tmp`;
   fs.mkdirSync(path.dirname(dest), { recursive: true });
@@ -35,5 +43,6 @@ module.exports = {
   download,
   json,
   text,
+  decode,
   write
 };

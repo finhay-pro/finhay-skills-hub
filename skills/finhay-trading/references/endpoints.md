@@ -6,7 +6,7 @@ Signing: see [authentication.md](../_shared/authentication.md). Query params are
 
 From `~/.finhay/credentials/.env`:
 
-- `USER_ID` — required for PnL endpoints; written by `infer-sub-account.sh` after fetching owner info
+- `USER_ID` — required for PnL endpoints; written by `infer-sub-account.sh` after fetching sub accounts
 - `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — written by [infer-sub-account.sh](../_shared/scripts/infer-sub-account.sh), used as `{subAccountId}`
 
 ## Errors
@@ -25,12 +25,6 @@ Common causes: missing API key, wrong path prefix, missing `USER_ID`, missing `f
 - `data` — asset-summary, order-book (detail), portfolio, pnl-today
 
 ---
-
-## Owner
-
-| # | Method | Path | Params | Res key | Detail |
-|---|--------|------|--------|---------|--------|
-| 1 | GET | `/users/oa/me` | — | `result` | [detail](./endpoints/owner.md) |
 
 ## Account
 

@@ -12,9 +12,10 @@ metadata:
 
 Read-only market data via the Finhay Securities Open API. All requests are signed `GET`.
 
-## Pre-flight
+## Pre-flight 
+**IMPORTANT**: Run pre-flight checks before any API call. This ensures credentials are set up.
 
-See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. (`USER_ID` not needed for market endpoints.)
+See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`.
 
 ## Making a Request
 

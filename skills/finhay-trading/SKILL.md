@@ -1,6 +1,6 @@
 ---
 name: finhay-trading
-description: "Owner identity, account balances, portfolio, orders, and profit/loss. Use when user asks about their account identity, trading account, stock holdings, order history, or today's PnL."
+description: "Account balances, portfolio, orders, and profit/loss. Use when user asks about their account identity, trading account, stock holdings, order history, or today's PnL."
 license: MIT
 metadata:
   author: Finhay Securities
@@ -14,7 +14,9 @@ Read-only user and trading data via the Finhay Securities Open API. All requests
 
 ## Pre-flight
 
-See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. `USER_ID` is populated by `infer-sub-account.sh`.
+**IMPORTANT**: Run pre-flight checks before any API call. This ensures credentials are set up and sub-account IDs are inferred.
+
+See [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`.
 
 ### Sub-account setup
 
@@ -36,12 +38,10 @@ When a request requires `{subAccountId}`, **ask the user which sub-account type*
 # Load credentials
 source ~/.finhay/credentials/.env
 
-# Owner
-./_shared/scripts/request.sh GET "/users/oa/me"
 
 # Trading — use SUB_ACCOUNT_NORMAL or SUB_ACCOUNT_MARGIN based on user choice
 ./_shared/scripts/request.sh GET "/trading/accounts/$SUB_ACCOUNT_NORMAL/summary"
-./_shared/scripts/request.sh GET "/trading/sub-accounts/$SUB_ACCOUNT_MARGIN/orders" "fromDate=2024-01-01&toDate=2024-01-31"
+./_shared/scripts/request.sh GET "/trading/sub-accounts/$SUB_ACCOUNT_MARGIN/orders" "fromDate=2026-01-01&toDate=2026-01-31"
 ./_shared/scripts/request.sh GET "/trading/v2/sub-accounts/$SUB_ACCOUNT_NORMAL/portfolio"
 ./_shared/scripts/request.sh GET "/trading/pnl-today/$USER_ID"
 ./_shared/scripts/request.sh GET /trading/market/session "exchange=HOSE"
@@ -51,7 +51,6 @@ source ~/.finhay/credentials/.env
 
 | Endpoint | Path param | Key params | Res key |
 |----------|------------|------------|---------|
-| `/users/oa/me` | — | — | `result` |
 | `/trading/accounts/{subAccountId}/summary` | ask user | — | `result` |
 | `/trading/sub-accounts/{subAccountId}/asset-summary` | ask user | — | `data` |
 | `/trading/sub-accounts/{subAccountId}/orders` | ask user | `fromDate`, `toDate` | `result` |

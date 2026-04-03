@@ -1,46 +1,51 @@
 #!/usr/bin/env node
+import path from "path";
+import { execFile } from "child_process";
+import { CREDENTIALS_ENV, loadEnv, readEnv, setEnv, writeEnv } from "./env-utils";
 
-const path = require("path");
-const { execFileSync } = require("child_process");
-const {
-  CREDENTIALS_ENV,
-  loadEnv,
-  readEnv,
-  setEnv,
-  writeEnv,
-} = require("./env-utils");
-
+loadEnv(CREDENTIALS_ENV);
 const pCred = CREDENTIALS_ENV;
-loadEnv(pCred);
-
-// ===== helpers =====
-const request = (...args) => JSON.parse(execFileSync("node", [path.join(__dirname, "request.js"), ...args], { encoding: "utf8" }));
 const upperCase = str => String(str).toUpperCase();
+
+// ===== helper: async request =====s
+const request = (...args) =>
+  new Promise((resolve, reject) => {
+    execFile("node", [path.join(process.cwd(), "request.js"), ...args], { encoding: "utf8" }, (err, stdout, stderr) => {
+      if (err) return reject(err);
+      try {
+        resolve(JSON.parse(stdout));
+      } catch {
+        reject(new Error(`Invalid JSON response: ${stdout}`));
+      }
+    });
+  });
 
 // ===== main =====
 (async () => {
-  let env = readEnv(pCred);
+  try {
+    await request("GET", "/users/health");
+    let env = readEnv(pCred);
+    const { USER_ID, SUB_ACCOUNT_NORMAL, SUB_ACCOUNT_MARGIN, FINHAY_API_KEY } = process.env;
+    if (!FINHAY_API_KEY) throw new Error("FINHAY_API_KEY required");
 
-  let uid = process.env.USER_ID;
-  if (!uid) {
-    const apiKey = process.env.FINHAY_API_KEY;
-    if (!apiKey) { console.error("ERROR: FINHAY_API_KEY required"); process.exit(1); }
+    const endpoints = {
+      subAccounts: uid => `/users/v1/users/${uid}/sub-accounts`,
+    };
 
-    const response = request("GET", `/users/oa/me`);
-    const owner = response.result;
-    uid = owner?.uid;
-    const subAccounts = owner?.sub_accounts || [];
-    if (!uid) { console.error("ERROR: userId missing in response"); process.exit(1); }
-    env = setEnv(env, "USER_ID", uid);
-    subAccounts.forEach(sba => {
-      const subAccountType = sba.type || "unknown";
-      env = setEnv(env, `SUB_ACCOUNT_${upperCase(subAccountType)}`, sba.id);
-      env = setEnv(env, `SUB_ACCOUNT_EXT_${upperCase(subAccountType)}`, sba.sub_account_ext);
-    });
-    writeEnv(pCred, env);
+    if (!SUB_ACCOUNT_NORMAL || !SUB_ACCOUNT_MARGIN) {
+      const subAccounts = (await request("GET", endpoints.subAccounts(USER_ID)))?.result || [];
+      subAccounts.forEach(({ type = "unknown", id, sub_account_ext }) => {
+        const key = upperCase(type);
+        env = setEnv(env, `SUB_ACCOUNT_${key}`, id);
+        env = setEnv(env, `SUB_ACCOUNT_EXT_${key}`, sub_account_ext);
+      });
+
+      writeEnv(pCred, env);
+    }
+
+    console.log("✅ Credentials updated successfully");
+  } catch(e) {
+    console.error("ERROR:", e.message);
+    process.exit(1);
   }
-  console.log("✅ Credentials updated successfully");
-})().catch(e => {
-  console.error("ERROR:", e.message);
-  process.exit(1);
-});
+})();
