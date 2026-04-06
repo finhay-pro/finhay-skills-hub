@@ -27,7 +27,6 @@ npx skills add finhay-pro/finhay-skills-hub --skill finhay-trading
 ## Setup
 
 ```bash
-npm install dotenv
 mkdir -p ~/.finhay/credentials
 cat > ~/.finhay/credentials/.env << 'EOF'
 FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
@@ -53,8 +52,7 @@ This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.
 
 ## Prerequisites
 
-- `node` >= 18
-- `dotenv` (`npm install -g dotenv`)
+- `bash`, `curl`, `openssl` (macOS/Linux) hoặc PowerShell 5.1+ (Windows)
 - `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
 
 ## License

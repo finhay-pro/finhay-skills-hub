@@ -17,9 +17,8 @@ Claude Code plugin — agent skills for the Finhay Securities Open API.
 
 ## Prerequisites
 
-- `node` >= 18
-- `dotenv` (`npm install dotenv`)
-- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET` 
+- `bash`, `curl`, `openssl` (macOS/Linux) hoặc PowerShell 5.1+ (Windows)
+- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
 
 ## API Requests
 

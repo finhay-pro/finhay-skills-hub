@@ -2,7 +2,7 @@
 
 Signing: see [authentication.md](../_shared/authentication.md). Query params are not signed.
 
-## Config Variables
+## Config Envs
 
 From `~/.finhay/credentials/.env`:
 
