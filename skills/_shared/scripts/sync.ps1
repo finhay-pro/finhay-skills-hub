@@ -38,19 +38,30 @@ function Sync-Component([string]$Name, [string]$Dest, [string]$Prefix) {
     $tmp = Join-Path ([System.IO.Path]::GetTempPath()) "sync-$([System.IO.Path]::GetRandomFileName())"
     New-Item -ItemType Directory -Path $tmp | Out-Null
     try {
+        # Download files, defer symlinks to after copy
+        $symlinks = @()
         $blobs | Where-Object { $_.path -like "skills/$Prefix/*" } | ForEach-Object {
-            $out = Join-Path $tmp ($_.path -replace '^skills/', '')
+            $rel = $_.path -replace '^skills/', ''
+            $out = Join-Path $tmp $rel
             New-Item -ItemType Directory -Path (Split-Path $out) -Force | Out-Null
             if ($_.mode -eq "120000") {
-                $target = (Invoke-WebRequest "$Raw/$($_.path)" -UseBasicParsing).Content.Trim()
-                try { New-Item -ItemType SymbolicLink -Path $out -Target $target -Force | Out-Null }
-                catch { Set-Content $out $target -Encoding UTF8; Write-Warning "Symlink needs Developer Mode: $out -> $target" }
+                $symlinks += @{ Rel = $rel; Target = (Invoke-WebRequest "$Raw/$($_.path)" -UseBasicParsing).Content.Trim() }
             } else {
                 Invoke-WebRequest "$Raw/$($_.path)" -OutFile $out -UseBasicParsing
             }
         }
         if (Test-Path $Dest) { Remove-Item $Dest -Recurse -Force }
         Copy-Item (Join-Path $tmp $Prefix) $Dest -Recurse
+        # Create symlinks at final destination
+        foreach ($sl in $symlinks) {
+            $link = Join-Path $Dest ($sl.Rel -replace "^$Prefix/", '')
+            if (Test-Path $link) { Remove-Item $link -Force }
+            try { New-Item -ItemType SymbolicLink -Path $link -Target $sl.Target -Force | Out-Null }
+            catch {
+                $absTarget = [System.IO.Path]::GetFullPath((Join-Path (Split-Path $link) $sl.Target))
+                cmd /c mklink /J "`"$link`"" "`"$absTarget`"" 2>$null | Out-Null
+            }
+        }
         Write-Host "${Name}: synced ($ver)"
     } finally { if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force } }
 }

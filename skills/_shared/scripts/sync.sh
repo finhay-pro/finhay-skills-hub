@@ -57,7 +57,7 @@ sync_component() {
   done < <(list_blobs "$prefix")
 
   rm -rf "$dest"
-  cp -r "${tmp}/${prefix}" "$dest"
+  cp -a "${tmp}/${prefix}" "$dest"
   find "$dest" -name "*.sh" -exec chmod +x {} +
   echo "${name}: synced (${ver})"
 }
