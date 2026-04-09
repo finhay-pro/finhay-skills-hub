@@ -124,42 +124,76 @@ FINHAY_BASE_URL=https://open-api.fhsc.com.vn
     }
 
     # --- Claude Desktop config ---
-    # Check Microsoft Store version first
-    $LocalAppData = $env:LOCALAPPDATA
-    $StorePath = Join-Path $LocalAppData "Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json"
+    # Try all possible Claude Desktop paths (Microsoft Store, standard installer, and Anthropic's newer locations)
+    $StorePath = Join-Path $env:LOCALAPPDATA "Packages\Claude_pzs8sxrjxfjjc\LocalCache\Roaming\Claude\claude_desktop_config.json"
     $StandardPath = Join-Path $env:APPDATA "Claude\claude_desktop_config.json"
 
-    if (Test-Path (Split-Path $StorePath -Parent)) {
+    # Prefer existing config file; if neither exists, prefer Store path if its parent dir exists, else standard
+    $ConfigPath = $null
+    if (Test-Path $StorePath) {
+        $ConfigPath = $StorePath
+    } elseif (Test-Path $StandardPath) {
+        $ConfigPath = $StandardPath
+    } elseif (Test-Path (Split-Path $StorePath -Parent)) {
         $ConfigPath = $StorePath
     } else {
         $ConfigPath = $StandardPath
     }
 
-    $ConfigDir = Split-Path $ConfigPath -Parent
-    New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
+    Write-Host "  Ghi config vao: $ConfigPath"
 
-    $FinhayEntry = @{
+    $ConfigDir = Split-Path $ConfigPath -Parent
+    if (-not (Test-Path $ConfigDir)) {
+        New-Item -ItemType Directory -Force -Path $ConfigDir | Out-Null
+    }
+
+    # Build full config as hashtable, merge with existing if any
+    $ConfigHash = @{ mcpServers = @{} }
+
+    if (Test-Path $ConfigPath) {
+        try {
+            $ExistingJson = Get-Content $ConfigPath -Raw -ErrorAction Stop
+            if ($ExistingJson.Trim()) {
+                $Existing = $ExistingJson | ConvertFrom-Json -ErrorAction Stop
+                # Convert PSCustomObject to hashtable recursively
+                $ConfigHash = @{}
+                foreach ($prop in $Existing.PSObject.Properties) {
+                    if ($prop.Name -eq "mcpServers") {
+                        $mcpHash = @{}
+                        foreach ($server in $prop.Value.PSObject.Properties) {
+                            $serverHash = @{}
+                            foreach ($p in $server.Value.PSObject.Properties) {
+                                $serverHash[$p.Name] = $p.Value
+                            }
+                            $mcpHash[$server.Name] = $serverHash
+                        }
+                        $ConfigHash["mcpServers"] = $mcpHash
+                    } else {
+                        $ConfigHash[$prop.Name] = $prop.Value
+                    }
+                }
+                if (-not $ConfigHash.ContainsKey("mcpServers")) {
+                    $ConfigHash["mcpServers"] = @{}
+                }
+            }
+        } catch {
+            Write-Host "  Canh bao: Khong doc duoc config cu, se tao moi. Loi: $($_.Exception.Message)"
+            $ConfigHash = @{ mcpServers = @{} }
+        }
+    }
+
+    # Add/update finhay entry
+    if ($ConfigHash["mcpServers"].ContainsKey("finhay")) {
+        Write-Host "  Entry 'finhay' da ton tai, cap nhat lai."
+    }
+    $ConfigHash["mcpServers"]["finhay"] = @{
         command = "npx"
         args = @("-y", "finhay-mcp-server")
     }
 
-    if (Test-Path $ConfigPath) {
-        $Config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
-        if (-not $Config.mcpServers) {
-            $Config | Add-Member -NotePropertyName "mcpServers" -NotePropertyValue @{}
-        }
-        if ($Config.mcpServers.finhay) {
-            Write-Host "  Claude Desktop config da co entry 'finhay', cap nhat lai."
-        }
-        $Config.mcpServers | Add-Member -NotePropertyName "finhay" -NotePropertyValue $FinhayEntry -Force
-        $Config | ConvertTo-Json -Depth 10 | Set-Content -Path $ConfigPath -Encoding UTF8
-    } else {
-        @{
-            mcpServers = @{
-                finhay = $FinhayEntry
-            }
-        } | ConvertTo-Json -Depth 10 | Set-Content -Path $ConfigPath -Encoding UTF8
-    }
+    # Write config
+    $JsonOutput = $ConfigHash | ConvertTo-Json -Depth 10
+    [System.IO.File]::WriteAllText($ConfigPath, $JsonOutput, [System.Text.Encoding]::UTF8)
 
     Write-Host "  Claude Desktop config: $ConfigPath"
     Write-Host ""
