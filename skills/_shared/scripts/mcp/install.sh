@@ -44,16 +44,17 @@ API_KEY=""
 API_SECRET=""
 
 if [ -f "$CREDS_FILE" ]; then
-    EXISTING_KEY=$(grep -oP '(?<=FINHAY_API_KEY=).+' "$CREDS_FILE" 2>/dev/null || true)
-    EXISTING_SECRET=$(grep -oP '(?<=FINHAY_API_SECRET=).+' "$CREDS_FILE" 2>/dev/null || true)
+    EXISTING_KEY=$(sed -n 's/^FINHAY_API_KEY=//p' "$CREDS_FILE" 2>/dev/null || true)
+    EXISTING_SECRET=$(sed -n 's/^FINHAY_API_SECRET=//p' "$CREDS_FILE" 2>/dev/null || true)
 
     if [ -n "$EXISTING_KEY" ] && [ -n "$EXISTING_SECRET" ]; then
-        MASKED_KEY="${EXISTING_KEY:0:8}***"
+        MASKED_KEY="$(echo "$EXISTING_KEY" | cut -c1-8)***"
         echo "  Tim thay credentials tai $CREDS_FILE"
         echo "  API Key: $MASKED_KEY"
         echo ""
         read -p "  Su dung credentials nay? (Y/n): " REUSE
-        if [ "${REUSE,,}" != "n" ]; then
+        REUSE_LOWER=$(echo "$REUSE" | tr '[:upper:]' '[:lower:]')
+        if [ "$REUSE_LOWER" != "n" ]; then
             API_KEY="$EXISTING_KEY"
             API_SECRET="$EXISTING_SECRET"
         fi
