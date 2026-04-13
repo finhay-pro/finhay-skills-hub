@@ -21,6 +21,12 @@ Common causes: missing API key, combining `symbol`/`symbols`/`exchange`, path mi
 |---|------|--------|---------|------|--------|
 | 1 | `/market/stock-realtime` | 1-of: `symbol`, `symbols`, `exchange` | `result` | object for `symbol`, array for `symbols`/`exchange` | [detail](./endpoints/stock-realtime.md) |
 
+## News
+
+| # | Path | Params | Res key | Detail |
+|---|------|--------|---------|--------|
+| 20 | `/market/news` | `stock`, `stocks`, `from_date`, `to_date` (all optional) | `result` | [detail](./endpoints/news.md) |
+
 ## Funds
 
 | # | Path | Params | Res key | Detail |

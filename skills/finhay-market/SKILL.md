@@ -32,6 +32,7 @@ Use [request.sh](./_shared/scripts/request.sh) for every call.
 | Endpoint | Use when | Path param | Query params |
 |----------|----------|------------|--------------|
 | `/market/stock-realtime` | Stock price, realtime quote | — | exactly one of: `symbol`, `symbols`, `exchange` |
+| `/market/news` | Corporate events: dividends, rights issues, AGM dates | — | `stock`, `stocks`, `from_date`, `to_date` (all optional, dates in DD/MM/YYYY; default range: last 1 year) |
 | `/market/funds` | Fund list, NAV | — | — |
 | `/market/funds/:fund/portfolio` | Fund holdings | `:fund` | `month` (optional) |
 | `/market/financial-data/gold`, `silver` | Gold/silver spot price | — | — |
