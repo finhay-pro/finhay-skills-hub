@@ -12,7 +12,7 @@ metadata:
 
 Read-only market data via the Finhay Securities Open API. All requests are signed `GET`.
 
-> **MANDATORY**: Before any action, complete the pre-flight checks below. Required: `FINHAY_API_KEY` and `FINHAY_API_SECRET`. `USER_ID` is not required for market endpoints. Do not skip or defer.
+> **MANDATORY**: Run pre-flight checks first. Required: `FINHAY_API_KEY` and `FINHAY_API_SECRET`. If any check fails, stop and fix before calling API.
 
 ## Pre-flight Checks
 
@@ -20,36 +20,49 @@ Read-only market data via the Finhay Securities Open API. All requests are signe
 2. Ensure credentials file exists: `~/.finhay/credentials/.env`.
   If missing, create it:
 
-  macOS/Linux:
-  ```bash
-  mkdir -p ~/.finhay/credentials
-  cat > ~/.finhay/credentials/.env << 'EOF'
-  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
-  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
-  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
-  EOF
-  chmod 600 ~/.finhay/credentials/.env
-  ```
+   macOS/Linux:
+   ```bash
+   mkdir -p ~/.finhay/credentials
+   cat > ~/.finhay/credentials/.env << 'EOF'
+   FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+   FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+   FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+   EOF
+   chmod 600 ~/.finhay/credentials/.env
+   ```
 
-  Windows (PowerShell):
-  ```powershell
-  New-Item -ItemType Directory -Force "$env:USERPROFILE\.finhay\credentials" | Out-Null
-  @"
-  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
-  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
-  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
-  "@ | Set-Content "$env:USERPROFILE\.finhay\credentials\.env"
-  ```
+   Windows (PowerShell):
+   ```powershell
+   New-Item -ItemType Directory -Force "$env:USERPROFILE\.finhay\credentials" | Out-Null
+   @"
+   FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+   FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+   FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+   "@ | Set-Content "$env:USERPROFILE\.finhay\credentials\.env"
+   ```
 3. Ensure required variables are set in that file:
-  - `FINHAY_API_KEY` (`ak_test_*` or `ak_live_*`)
-  - `FINHAY_API_SECRET` (64-char hex)
-  - optional: `FINHAY_BASE_URL` (defaults to `https://open-api.fhsc.com.vn`)
+   - `FINHAY_API_KEY` (`ak_test_*` or `ak_live_*`)
+   - `FINHAY_API_SECRET` (64-char hex)
+   - optional: `FINHAY_BASE_URL` (defaults to `https://open-api.fhsc.com.vn`)
+
+## Agent Behavior
+
+1. Validate endpoint and parameters against this skill table.
+2. Resolve all path variables before sending request.
+3. Call `finhay request` with the final path and allowed query keys.
+4. Return the API response immediately in readable form; do not hide or defer output.
 
 ## Making a Request
 
-Prerequisite: use `finhay-cli` (`npm install -g finhay-cli`) or run via `npx -y finhay-cli ...`.
+Use `finhay-cli` (`npm install -g finhay-cli`) or run via `npx -y finhay-cli ...`.
 
 Use `finhay request` for every call.
+
+Template:
+
+```bash
+finhay request --path /market/<endpoint> --query key=value
+```
 
 ```bash
 finhay request --path /market/stock-realtime --query symbol=VNM
