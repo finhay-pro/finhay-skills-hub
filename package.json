@@ -7,12 +7,7 @@
     "skills",
     "finhay",
     "stock",
-    "market",
-    "trading",
-    "vietnam",
     "finance",
-    "securities",
-    "portfolio",
     "gold",
     "fund",
     "macro"
@@ -32,13 +27,7 @@
     "CLAUDE.md",
     ".claude-plugin/"
   ],
-  "scripts": {
-    "postinstall": "echo '\\n  finhay-skills-hub installed!\\n  Skills: finhay-market, finhay-portfolio\\n  Setup: create ~/.finhay/credentials/.env with your API credentials\\n'"
-  },
   "engines": {
     "node": ">=18"
-  },
-  "dependencies": {
-    "dotenv": "^17.3.1"
   }
 }

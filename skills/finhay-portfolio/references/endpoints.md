@@ -1,13 +1,13 @@
 # Trading Endpoints
 
-Signing: see [authentication.md](../_shared/authentication.md). Query params are not signed.
+Signing rules: use `finhay request` for all calls. Query parameters are not included in the signature.
 
 ## Config Envs
 
 From `~/.finhay/credentials/.env`:
 
-- `USER_ID` — required for assets summary and PnL; written by `infer-sub-account.sh`
-- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — used as `{subAccountId}`; written by `infer-sub-account.sh`
+- `USER_ID` — required for assets summary and PnL; define in `~/.finhay/credentials/.env`
+- `SUB_ACCOUNT_NORMAL`, `SUB_ACCOUNT_MARGIN` — used as `{subAccountId}`; define in `~/.finhay/credentials/.env`
 
 ## Error Codes
 

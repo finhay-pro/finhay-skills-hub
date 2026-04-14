@@ -44,7 +44,7 @@ Retrieve account summary including balance, debt, margin, and bank info.
 
 ### Config Required
 
-- `{subAccountId}` — inferred via `infer-sub-account.sh`
+- `{subAccountId}` — read from `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` in `~/.finhay/credentials/.env`
 
 ### Components
 

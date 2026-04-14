@@ -12,19 +12,52 @@ metadata:
 
 Read-only market data via the Finhay Securities Open API. All requests are signed `GET`.
 
-> **MANDATORY**: Before any action, read and complete [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`. `USER_ID` not needed for market endpoints. Do not skip or defer.
+> **MANDATORY**: Before any action, complete the pre-flight checks below. Required: `FINHAY_API_KEY` and `FINHAY_API_SECRET`. `USER_ID` is not required for market endpoints. Do not skip or defer.
+
+## Pre-flight Checks
+
+1. Ensure CLI is available: `finhay --help` (or use `npx -y finhay-cli --help`).
+2. Ensure credentials file exists: `~/.finhay/credentials/.env`.
+  If missing, create it:
+
+  macOS/Linux:
+  ```bash
+  mkdir -p ~/.finhay/credentials
+  cat > ~/.finhay/credentials/.env << 'EOF'
+  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+  EOF
+  chmod 600 ~/.finhay/credentials/.env
+  ```
+
+  Windows (PowerShell):
+  ```powershell
+  New-Item -ItemType Directory -Force "$env:USERPROFILE\.finhay\credentials" | Out-Null
+  @"
+  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+  "@ | Set-Content "$env:USERPROFILE\.finhay\credentials\.env"
+  ```
+3. Ensure required variables are set in that file:
+  - `FINHAY_API_KEY` (`ak_test_*` or `ak_live_*`)
+  - `FINHAY_API_SECRET` (64-char hex)
+  - optional: `FINHAY_BASE_URL` (defaults to `https://open-api.fhsc.com.vn`)
 
 ## Making a Request
 
-Use [request.sh](./_shared/scripts/request.sh) for every call.
+Prerequisite: use `finhay-cli` (`npm install -g finhay-cli`) or run via `npx -y finhay-cli ...`.
+
+Use `finhay request` for every call.
 
 ```bash
-./_shared/scripts/request.sh GET /market/stock-realtime "symbol=VNM"
-./_shared/scripts/request.sh GET /market/stock-realtime "symbols=VNM,VIC,HPG"
-./_shared/scripts/request.sh GET /market/stock-realtime "exchange=HOSE"
-./_shared/scripts/request.sh GET /market/financial-data/gold
-./_shared/scripts/request.sh GET /market/price-histories-chart "symbol=VNM&resolution=1D&from=1609459200&to=1704067200"
-./_shared/scripts/request.sh GET /market/financial-data/macro "type=CPI&country=VN&period=YEARLY"
+finhay request --path /market/stock-realtime --query symbol=VNM
+finhay request --path /market/stock-realtime --query symbols=VNM,VIC,HPG
+finhay request --path /market/stock-realtime --query exchange=HOSE
+finhay request --path /market/financial-data/gold
+finhay request --path /market/price-histories-chart --query symbol=VNM --query resolution=1D --query from=1609459200 --query to=1704067200
+finhay request --path /market/financial-data/macro --query type=CPI --query country=VN --query period=YEARLY
 ```
 
 ## Endpoints
@@ -34,14 +67,14 @@ Use [request.sh](./_shared/scripts/request.sh) for every call.
 | `/market/stock-realtime` | Stock price, realtime quote | — | exactly one of: `symbol`, `symbols`, `exchange` |
 | `/market/news` | Corporate events: dividends, rights issues, AGM dates | — | `stock`, `stocks`, `from_date`, `to_date` (all optional, dates in DD/MM/YYYY; default range: last 1 year) |
 | `/market/funds` | Fund list, NAV | — | — |
-| `/market/funds/:fund/portfolio` | Fund holdings | `:fund` | `month` (optional) |
+| `/market/funds/{fund}/portfolio` | Fund holdings | `{fund}` | `month` (optional) |
 | `/market/financial-data/gold`, `silver` | Gold/silver spot price | — | — |
 | `/market/financial-data/gold-chart`, `silver-chart` | Gold/silver price chart | — | `days` (default 30) |
 | `/market/financial-data/gold-providers`, `metal-providers` | Price by provider (PNJ, DOJI…) | — | — |
 | `/market/financial-data/bank-interest-rates` | Bank deposit rates | — | — |
 | `/market/financial-data/cryptos/top-trending` | Top crypto | — | — |
 | `/market/financial-data/macro` | CPI, PMI, interest rates… | — | `type`, `country`, `period` |
-| `/market/recommendation-reports/:symbol` | Analyst reports | `:symbol` | — |
+| `/market/recommendation-reports/{symbol}` | Analyst reports | `{symbol}` | — |
 | `/market/price-histories-chart` | OHLCV price history | — | `symbol`, `resolution` (`1D`, `5`, `15`, `30`, `1H`, `4H`, default `1D`), `from`, `to` (seconds) |
 | `/market/company-financial/overview` | Key ratios: PE, PB, ROE, EPS, dividend yield | — | `symbol` |
 | `/market/company-financial/analysis` | Historical financial metrics by period | — | `symbol`, `period` (`annual`/`quarterly`) |
@@ -50,13 +83,15 @@ Use [request.sh](./_shared/scripts/request.sh) for every call.
 ### Parameter rules
 
 - Each endpoint accepts **only** the parameters listed in its path and query columns above. Do not add extra parameters.
-- All `:variables` in the URL are **path** variables — substitute them into the URL, never pass as query params.
+- All `{variables}` in the URL are **path** variables — substitute them into the URL, never pass as query params.
 
 Details & response shapes: [references/endpoints.md](./references/endpoints.md).
 
 ## Constraints
 
-See [shared constraints](./_shared/constraints.md), plus:
+- **Read-only** - never send non-GET requests or mutating actions.
+- **Credentials** - never display full keys; mask with `********`. Never send credentials outside the configured `FINHAY_BASE_URL`. Never bypass TLS (`--insecure`, `-k`).
+- **Responses** - present results to the user immediately in a readable format. Never silently discard a response.
 
 - **Stock realtime** — pass exactly one of `symbol`, `symbols`, or `exchange`. Never combine them.
 - **Price history** — `from` and `to` are Unix timestamps in **seconds**, not milliseconds. If a value exceeds 9,999,999,999, stop and ask the user to convert. `resolution` must be one of `1D`, `5`, `15`, `30`, `1H`, or `4H`, with a default of `1D` when not provided. When not provided, default `to` to now and `from` to 5 years ago.

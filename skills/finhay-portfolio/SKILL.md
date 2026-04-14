@@ -12,50 +12,85 @@ metadata:
 
 Read-only trading data via the Finhay Securities Open API. All endpoints use signed `GET` requests.
 
-> **MANDATORY**: Before any action, read and complete [pre-flight checks](./_shared/preflight.md). Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`, `USER_ID`, and the relevant `SUB_ACCOUNT_*` variable. Do not skip or defer.
+> **MANDATORY**: Before any action, complete the pre-flight checks below. Required: `FINHAY_API_KEY`, `FINHAY_API_SECRET`, `USER_ID`, and the relevant `SUB_ACCOUNT_*` variable. Do not skip or defer.
+
+## Pre-flight Checks
+
+1. Ensure CLI is available: `finhay --help` (or use `npx -y finhay-cli --help`).
+2. Ensure credentials file exists: `~/.finhay/credentials/.env`.
+  If missing, create it:
+
+  macOS/Linux:
+  ```bash
+  mkdir -p ~/.finhay/credentials
+  cat > ~/.finhay/credentials/.env << 'EOF'
+  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+  USER_ID=YOUR_USER_ID
+  SUB_ACCOUNT_NORMAL=YOUR_NORMAL_SUB_ACCOUNT_ID
+  SUB_ACCOUNT_MARGIN=YOUR_MARGIN_SUB_ACCOUNT_ID
+  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+  EOF
+  chmod 600 ~/.finhay/credentials/.env
+  ```
+
+  Windows (PowerShell):
+  ```powershell
+  New-Item -ItemType Directory -Force "$env:USERPROFILE\.finhay\credentials" | Out-Null
+  @"
+  FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
+  FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
+  USER_ID=YOUR_USER_ID
+  SUB_ACCOUNT_NORMAL=YOUR_NORMAL_SUB_ACCOUNT_ID
+  SUB_ACCOUNT_MARGIN=YOUR_MARGIN_SUB_ACCOUNT_ID
+  FINHAY_BASE_URL=https://open-api.fhsc.com.vn
+  "@ | Set-Content "$env:USERPROFILE\.finhay\credentials\.env"
+  ```
+3. Ensure required variables are set in that file:
+  - `FINHAY_API_KEY` (`ak_test_*` or `ak_live_*`)
+  - `FINHAY_API_SECRET` (64-char hex)
+  - `USER_ID`
+  - `SUB_ACCOUNT_NORMAL` and/or `SUB_ACCOUNT_MARGIN`
+  - optional: `FINHAY_BASE_URL` (defaults to `https://open-api.fhsc.com.vn`)
 
 ## Setup
 
-If `USER_ID` or `SUB_ACCOUNT_*` variables are missing, run once:
-
-```bash
-./_shared/scripts/infer-sub-account.sh
-```
-
-This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env`.
+If `USER_ID` or `SUB_ACCOUNT_*` variables are missing, add them manually to `~/.finhay/credentials/.env`.
 
 ## Making a Request
 
-Always use `request.sh`. Resolve all path variables (`{subAccountId}`, `{userId}`) before calling — the signed path must be the final, fully resolved path.
+Prerequisite: use `finhay-cli` (`npm install -g finhay-cli`) or run via `npx -y finhay-cli ...`.
+
+Always use `finhay request`. Resolve all path variables (`{subAccountId}`, `{userId}`) before calling — the signed path must be the final, fully resolved path.
+
+Use concrete values in `--path` (from `~/.finhay/credentials/.env`), not unresolved shell placeholders.
 
 ```bash
-source ~/.finhay/credentials/.env
-
-./_shared/scripts/request.sh GET "/trading/accounts/$SUB_ACCOUNT_NORMAL/summary"
-./_shared/scripts/request.sh GET "/users/v4/users/$USER_ID/assets/summary"
-./_shared/scripts/request.sh GET "/trading/sub-accounts/$SUB_ACCOUNT_MARGIN/orders" "fromDate=2024-01-01&toDate=2024-01-31"
-./_shared/scripts/request.sh GET "/trading/v2/sub-accounts/$SUB_ACCOUNT_NORMAL/portfolio"
-./_shared/scripts/request.sh GET "/trading/pnl-today/$USER_ID"
-./_shared/scripts/request.sh GET "/trading/market/session" "exchange=HOSE"
+finhay request --path "/trading/accounts/<SUB_ACCOUNT_NORMAL>/summary"
+finhay request --path "/users/v4/users/<USER_ID>/assets/summary"
+finhay request --path "/trading/sub-accounts/<SUB_ACCOUNT_MARGIN>/orders" --query fromDate=2024-01-01 --query toDate=2024-01-31
+finhay request --path "/trading/v2/sub-accounts/<SUB_ACCOUNT_NORMAL>/portfolio"
+finhay request --path "/trading/pnl-today/<USER_ID>"
+finhay request --path "/trading/market/session" --query exchange=HOSE
 ```
 
 ## Sub-account Selection
 
 When `{subAccountId}` is required, ask the user whether to use NORMAL or MARGIN, then substitute the corresponding env variable:
-- NORMAL → `$SUB_ACCOUNT_NORMAL`
-- MARGIN → `$SUB_ACCOUNT_MARGIN`
+- NORMAL → `SUB_ACCOUNT_NORMAL`
+- MARGIN → `SUB_ACCOUNT_MARGIN`
 
 ## Endpoints
 
 | Endpoint | Use when | Path param | Query params | Res key |
 |----------|----------|------------|--------------|---------|
 | `/trading/accounts/{subAccountId}/summary` | Account detail, margin, debt | `{subAccountId}` → ask user | — | `result` |
-| `/users/v4/users/{userId}/assets/summary` | Balance, total assets, NAV | `{userId}` → `$USER_ID` | `cache-control` (default `CACHE`) | `data` |
+| `/users/v4/users/{userId}/assets/summary` | Balance, total assets, NAV | `{userId}` → `USER_ID` | `cache-control` (default `CACHE`) | `data` |
 | `/trading/sub-accounts/{subAccountId}/orders` | Order history | `{subAccountId}` → ask user | `fromDate`, `toDate` (required) | `result` |
 | `/trading/v1/accounts/{subAccountId}/order-book` | Today's order book | `{subAccountId}` → ask user | — | `result` |
 | `/trading/v1/accounts/{subAccountId}/order-book/{orderId}` | Single order detail | `{subAccountId}` → ask user, `{orderId}` | — | `data` |
 | `/trading/v2/sub-accounts/{subAccountId}/portfolio` | Stock holdings | `{subAccountId}` → ask user | — | `data` |
-| `/trading/pnl-today/{userId}` | Today's P&L | `{userId}` → `$USER_ID` | — | `data` |
+| `/trading/pnl-today/{userId}` | Today's P&L | `{userId}` → `USER_ID` | — | `data` |
 | `/trading/v5/account/{subAccountId}/user-rights` | Trading permissions | `{subAccountId}` → ask user | — | `result` |
 | `/trading/market/session` | Market open/close | — | `exchange` (e.g. `HOSE`) | `result` |
 
@@ -70,6 +105,8 @@ Details & response schemas: [references/endpoints.md](./references/endpoints.md)
 
 ## Constraints
 
-See [shared constraints](./_shared/constraints.md), plus:
+- **Read-only** - never send non-GET requests or mutating actions.
+- **Credentials** - never display full keys; mask with `********`. Never send credentials outside the configured `FINHAY_BASE_URL`. Never bypass TLS (`--insecure`, `-k`).
+- **Responses** - present results to the user immediately in a readable format. Never silently discard a response.
 
 - Never substitute `{subAccountId}` without first confirming the sub-account type with the user.

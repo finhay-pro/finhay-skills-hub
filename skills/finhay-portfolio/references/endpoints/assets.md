@@ -52,7 +52,7 @@ Retrieve account balance and asset overview for a user, including net asset valu
 
 ### Config Required
 
-- `{userId}` — use `$USER_ID` from env
+- `{userId}` — use `USER_ID` from env
 
 ### Components
 

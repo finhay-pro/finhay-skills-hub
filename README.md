@@ -2,6 +2,10 @@
 
 Agent skills for the [Finhay Securities](https://fhsc.com.vn/) Open API. Works with Claude Code, Cursor, and other AI coding assistants.
 
+This repository is the skills project.
+
+For CLI usage, use the separate project/package: `finhay-cli`.
+
 ## Skills
 
 | Skill | Description |
@@ -24,6 +28,23 @@ npx skills add finhay-pro/finhay-skills-hub --skill finhay-market
 npx skills add finhay-pro/finhay-skills-hub --skill finhay-portfolio
 ```
 
+### CLI (Separate Project: `finhay-cli`)
+
+```bash
+npm install -g finhay-cli
+finhay --help
+finhay request --path /market/stock-realtime --query symbol=VNM
+finhay request --path /market/price-histories-chart --query symbol=VNM --query resolution=1D --query from=1704067200 --query to=1711929600
+finhay skills sync
+```
+
+Or run without global install:
+
+```bash
+npx -y finhay-cli --help
+npx -y finhay-cli request --path /market/stock-realtime --query symbol=VNM
+```
+
 ## Setup
 
 ```bash
@@ -36,14 +57,6 @@ EOF
 chmod 600 ~/.finhay/credentials/.env
 ```
 
-Then run once to resolve your user identity and sub-accounts:
-
-```bash
-./_shared/scripts/infer-sub-account.sh
-```
-
-This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env` — required for all trading endpoints.
-
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `FINHAY_API_KEY` | Yes | `ak_test_*` or `ak_live_*` |
@@ -52,8 +65,8 @@ This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.
 
 ## Prerequisites
 
-- `bash`, `curl`, `openssl` (macOS/Linux) hoặc PowerShell 5.1+ (Windows)
-- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
+- `npx skills` or Claude Code plugin for skill installation
+- `finhay-cli` for API requests (`npm install -g finhay-cli` or `npx -y finhay-cli ...`)
 
 ## License
 

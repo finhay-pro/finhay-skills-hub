@@ -1,6 +1,6 @@
 # Market Endpoints
 
-Signing: see [authentication.md](../_shared/authentication.md). Query params are not signed. No `USER_ID` needed.
+Signing rules: use `finhay request` for all calls. Query parameters are not included in the signature. `USER_ID` is not required.
 
 ## Errors
 
@@ -32,8 +32,8 @@ Common causes: missing API key, combining `symbol`/`symbols`/`exchange`, path mi
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
 | 2 | `/market/funds` | — | `data` | [detail](./endpoints/funds.md) |
-| 3 | `/market/funds/:fund/portfolio` | `fund`* (path), `month` | `data` | [detail](./endpoints/fund-portfolio.md) |
-| 4 | `/market/funds/:fund/months` | `fund`* (path) | `data` | [detail](./endpoints/fund-months.md) |
+| 3 | `/market/funds/{fund}/portfolio` | `fund`* (path), `month` | `data` | [detail](./endpoints/fund-portfolio.md) |
+| 4 | `/market/funds/{fund}/months` | `fund`* (path) | `data` | [detail](./endpoints/fund-months.md) |
 
 ## Financial Data — Precious Metals
 
@@ -59,7 +59,7 @@ Common causes: missing API key, combining `symbol`/`symbols`/`exchange`, path mi
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 15 | `/market/recommendation-reports/:symbol` | `symbol`* (path) | `data` | [detail](./endpoints/recommendation-reports.md) |
+| 15 | `/market/recommendation-reports/{symbol}` | `symbol`* (path) | `data` | [detail](./endpoints/recommendation-reports.md) |
 
 ## Price History
 

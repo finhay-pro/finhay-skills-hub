@@ -52,7 +52,7 @@ Retrieve portfolio holdings with realtime prices and PnL for a sub-account.
 
 ### Config Required
 
-- `{subAccountId}` — inferred via `infer-sub-account.sh`
+- `{subAccountId}` — read from `SUB_ACCOUNT_NORMAL` or `SUB_ACCOUNT_MARGIN` in `~/.finhay/credentials/.env`
 
 ### Components
 
