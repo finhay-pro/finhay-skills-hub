@@ -53,6 +53,16 @@ Read-only trading data via the Finhay Securities Open API. All endpoints use sig
    - `SUB_ACCOUNT_NORMAL` and/or `SUB_ACCOUNT_MARGIN`
    - optional: `FINHAY_BASE_URL` (defaults to `https://open-api.fhsc.com.vn`)
 
+## Infer Sub-Accounts
+
+If `USER_ID` or `SUB_ACCOUNT_*` values are missing, run the CLI helper to fetch them
+and update `~/.finhay/credentials/.env`:
+
+```bash
+finhay infer-sub-account
+```
+
+
 ## Agent Behavior
 
 1. Confirm whether the user wants NORMAL or MARGIN account when `{subAccountId}` is required.
