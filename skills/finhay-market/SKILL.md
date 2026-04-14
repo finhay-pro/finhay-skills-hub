@@ -42,7 +42,7 @@ Use [request.sh](./_shared/scripts/request.sh) for every call.
 | `/market/financial-data/cryptos/top-trending` | Top crypto | — | — |
 | `/market/financial-data/macro` | CPI, PMI, interest rates… | — | `type`, `country`, `period` |
 | `/market/recommendation-reports/:symbol` | Analyst reports | `:symbol` | — |
-| `/market/price-histories-chart` | OHLCV price history | — | `symbol`, `resolution` (only `1D`), `from`, `to` (seconds) |
+| `/market/price-histories-chart` | OHLCV price history | — | `symbol`, `resolution` (`1D`, `5`, `15`, `30`, `1H`, `4H`, default `1D`), `from`, `to` (seconds) |
 | `/market/company-financial/overview` | Key ratios: PE, PB, ROE, EPS, dividend yield | — | `symbol` |
 | `/market/company-financial/analysis` | Historical financial metrics by period | — | `symbol`, `period` (`annual`/`quarterly`) |
 | `/market/v2/financial-statement/statement` | Income/balance sheet/cash flow, metric-value row format | — | `symbol`, `type`, `period`, `limit` |
@@ -59,4 +59,4 @@ Details & response shapes: [references/endpoints.md](./references/endpoints.md).
 See [shared constraints](./_shared/constraints.md), plus:
 
 - **Stock realtime** — pass exactly one of `symbol`, `symbols`, or `exchange`. Never combine them.
-- **Price history** — `from` and `to` are Unix timestamps in **seconds**, not milliseconds. If a value exceeds 9,999,999,999, stop and ask the user to convert. `resolution` must be `1D`. When not provided, default `to` to now and `from` to 5 years ago.
+- **Price history** — `from` and `to` are Unix timestamps in **seconds**, not milliseconds. If a value exceeds 9,999,999,999, stop and ask the user to convert. `resolution` must be one of `1D`, `5`, `15`, `30`, `1H`, or `4H`, with a default of `1D` when not provided. When not provided, default `to` to now and `from` to 5 years ago.

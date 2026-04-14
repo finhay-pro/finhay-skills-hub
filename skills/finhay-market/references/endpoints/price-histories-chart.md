@@ -26,11 +26,16 @@ Retrieve historical price data for charting. Returns columnar arrays for efficie
       - name: resolution
         in: query
         required: true
-        description: Chart resolution. Currently only `1D` (daily) is supported.
+        description: Chart resolution. Defaults to `1D`.
         schema:
           type: string
           enum:
             - 1D
+            - 5
+            - 15
+            - 30
+            - 1H
+            - 4H
       - name: from
         in: query
         required: true
@@ -99,7 +104,7 @@ components:
           example: VNM
         resolution:
           type: string
-          enum: [1D]
+          enum: [1D, 5, 15, 30, 1H, 4H]
           example: 1D
         time:
           type: array
@@ -146,7 +151,7 @@ All parameters are validated before reaching the controller:
 | Param | Rule |
 |-------|------|
 | `symbol` | Must exist, be a string, and not empty |
-| `resolution` | Must exist and be a valid `Resolution` enum value (currently only `1D`) |
+| `resolution` | Must exist and be a valid `Resolution` enum value (`1D`, `5`, `15`, `30`, `1H`, `4H`). Default is `1D` when omitted. |
 | `from` | Must exist, be an integer >= 0 |
 | `to` | Must exist, be an integer >= 0 |
 
