@@ -1,6 +1,6 @@
 ---
 name: finhay-market
-description: "Stock prices, funds, gold, silver, crypto, macro indicators, bank rates, price charts, and company financials (income statement, balance sheet, cash flow, ratios). Use when user asks about stock prices, gold/silver prices, fund performance, interest rates, macro data, price history charts, or company financial statements."
+description: "Stock prices, gold, silver, crypto, macro indicators, bank rates, price charts, and company financials (income statement, balance sheet, cash flow, ratios). Use when user asks about stock prices, gold/silver prices, interest rates, macro data, price history charts, or company financial statements."
 license: MIT
 metadata:
   author: Finhay Securities
@@ -33,8 +33,6 @@ Use [request.sh](./_shared/scripts/request.sh) for every call.
 |----------|----------|------------|--------------|
 | `/market/stock-realtime` | Stock price, realtime quote | — | exactly one of: `symbol`, `symbols`, `exchange` |
 | `/market/news` | Corporate events: dividends, rights issues, AGM dates | — | `stock`, `stocks`, `from_date`, `to_date` (all optional, dates in DD/MM/YYYY; default range: last 1 year) |
-| `/market/funds` | Fund list, NAV | — | — |
-| `/market/funds/:fund/portfolio` | Fund holdings | `:fund` | `month` (optional) |
 | `/market/financial-data/gold`, `silver` | Gold/silver spot price | — | — |
 | `/market/financial-data/gold-chart`, `silver-chart` | Gold/silver price chart | — | `days` (default 30) |
 | `/market/financial-data/gold-providers`, `metal-providers` | Price by provider (PNJ, DOJI…) | — | — |

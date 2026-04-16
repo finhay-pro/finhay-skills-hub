@@ -25,55 +25,47 @@ Common causes: missing API key, combining `symbol`/`symbols`/`exchange`, path mi
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 20 | `/market/news` | `stock`, `stocks`, `from_date`, `to_date` (all optional) | `result` | [detail](./endpoints/news.md) |
-
-## Funds
-
-| # | Path | Params | Res key | Detail |
-|---|------|--------|---------|--------|
-| 2 | `/market/funds` | — | `data` | [detail](./endpoints/funds.md) |
-| 3 | `/market/funds/:fund/portfolio` | `fund`* (path), `month` | `data` | [detail](./endpoints/fund-portfolio.md) |
-| 4 | `/market/funds/:fund/months` | `fund`* (path) | `data` | [detail](./endpoints/fund-months.md) |
+| 2 | `/market/news` | `stock`, `stocks`, `from_date`, `to_date` (all optional) | `result` | [detail](./endpoints/news.md) |
 
 ## Financial Data — Precious Metals
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 5 | `/market/financial-data` | — | `data` | [detail](./endpoints/financial-data.md) |
-| 6 | `/market/financial-data/gold` | — | `data` | [detail](./endpoints/gold.md) |
-| 7 | `/market/financial-data/silver` | — | `data` | [detail](./endpoints/silver.md) |
-| 8 | `/market/financial-data/gold-chart` | `days` (default 30) | `data` | [detail](./endpoints/gold-chart.md) |
-| 9 | `/market/financial-data/silver-chart` | `days` (default 30) | `data` | [detail](./endpoints/silver-chart.md) |
-| 10 | `/market/financial-data/gold-providers` | — | `data` | [detail](./endpoints/gold-providers.md) |
-| 11 | `/market/financial-data/metal-providers` | — | `data` | [detail](./endpoints/metal-providers.md) |
+| 3 | `/market/financial-data` | — | `data` | [detail](./endpoints/financial-data.md) |
+| 4 | `/market/financial-data/gold` | — | `data` | [detail](./endpoints/gold.md) |
+| 5 | `/market/financial-data/silver` | — | `data` | [detail](./endpoints/silver.md) |
+| 6 | `/market/financial-data/gold-chart` | `days` (default 30) | `data` | [detail](./endpoints/gold-chart.md) |
+| 7 | `/market/financial-data/silver-chart` | `days` (default 30) | `data` | [detail](./endpoints/silver-chart.md) |
+| 8 | `/market/financial-data/gold-providers` | — | `data` | [detail](./endpoints/gold-providers.md) |
+| 9 | `/market/financial-data/metal-providers` | — | `data` | [detail](./endpoints/metal-providers.md) |
 
 ## Financial Data — Other
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 12 | `/market/financial-data/bank-interest-rates` | — | `data` | [detail](./endpoints/bank-interest-rates.md) |
-| 13 | `/market/financial-data/cryptos/top-trending` | — | `data` | [detail](./endpoints/cryptos-top-trending.md) |
-| 14 | `/market/financial-data/macro` | `type`*, `country`*, `period` | `data` | [detail](./endpoints/macro.md) |
+| 10 | `/market/financial-data/bank-interest-rates` | — | `data` | [detail](./endpoints/bank-interest-rates.md) |
+| 11 | `/market/financial-data/cryptos/top-trending` | — | `data` | [detail](./endpoints/cryptos-top-trending.md) |
+| 12 | `/market/financial-data/macro` | `type`*, `country`*, `period` | `data` | [detail](./endpoints/macro.md) |
 
 ## Reports
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 15 | `/market/recommendation-reports/:symbol` | `symbol`* (path) | `data` | [detail](./endpoints/recommendation-reports.md) |
+| 13 | `/market/recommendation-reports/:symbol` | `symbol`* (path) | `data` | [detail](./endpoints/recommendation-reports.md) |
 
 ## Price History
 
 | # | Path | Params | Res key | Note | Detail |
 |---|------|--------|---------|------|--------|
-| 16 | `/market/price-histories-chart` | `symbol`*, `resolution`* (`1D`, `5`, `15`, `30`, `1H`, `4H`, default `1D`), `from`*, `to`* (seconds) | `data` | `from`/`to` in **seconds** not ms | [detail](./endpoints/price-histories-chart.md) |
+| 14 | `/market/price-histories-chart` | `symbol`*, `resolution`* (`1D`, `5`, `15`, `30`, `1H`, `4H`, default `1D`), `from`*, `to`* (seconds) | `data` | `from`/`to` in **seconds** not ms | [detail](./endpoints/price-histories-chart.md) |
 
 ## Company Financial
 
 | # | Path | Params | Res key | Detail |
 |---|------|--------|---------|--------|
-| 17 | `/market/company-financial/overview` | `symbol`* | `data` | [detail](./endpoints/company-financial-overview.md) |
-| 18 | `/market/company-financial/analysis` | `symbol`*, `period` | `data` | [detail](./endpoints/company-financial-analysis.md) |
-| 19 | `/market/v2/financial-statement/statement` | `symbol`*, `type`*, `period`, `limit` | `data` | [detail](./endpoints/financial-statement.md) |
+| 15 | `/market/company-financial/overview` | `symbol`* | `data` | [detail](./endpoints/company-financial-overview.md) |
+| 16 | `/market/company-financial/analysis` | `symbol`*, `period` | `data` | [detail](./endpoints/company-financial-analysis.md) |
+| 17 | `/market/v2/financial-statement/statement` | `symbol`*, `type`*, `period`, `limit` | `data` | [detail](./endpoints/financial-statement.md) |
 
 ---
 
