@@ -101,7 +101,7 @@ CMD_INFER() {
 
 CMD_SYNC() {
     SKILL="$1"; [ -z "$SKILL" ] && exit 1
-    FILES=$(curl -sf "${API}/git/trees/${BRANCH}?recursive=1" | jq -r --arg p "skills/$SKILL/" '.tree[] | select(.path | startswith($p)) | .path')
+    FILES=$(curl -sf "${API}/git/trees/${BRANCH}?recursive=1" | jq -r --arg p "skills/$SKILL/" '.tree[] | select(.path | startswith($p)) | select(.type == "blob") | .path')
     tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
     while IFS= read -r f; do
         out="${tmp}/${f#skills/}"
