@@ -23,6 +23,7 @@ _REQ() {
     local AK=$(grep "^FINHAY_API_KEY=" "$CREDS_FILE" | cut -d'=' -f2-)
     local AS=$(grep "^FINHAY_API_SECRET=" "$CREDS_FILE" | cut -d'=' -f2-)
     local BU=$(grep "^FINHAY_BASE_URL=" "$CREDS_FILE" | cut -d'=' -f2-)
+    local UI=$(grep "^USER_ID=" "$CREDS_FILE" | cut -d'=' -f2-)
     [ -z "$BU" ] && BU="https://open-api.fhsc.com.vn"
 
     local TS=$(( $(date -u +%s) * 1000 ))
@@ -38,6 +39,7 @@ _REQ() {
     local TMP=$(mktemp)
     local CODE=$(curl -sS -X "$METHOD" "$URL" \
         -H "X-FH-APIKEY: $AK" \
+        -H "X-FH-USER-ID: $UI" \
         -H "X-FH-TIMESTAMP: $TS" \
         -H "X-FH-NONCE: $NONCE" \
         -H "X-FH-SIGNATURE: $SIG" \
@@ -92,9 +94,9 @@ CMD_INFER() {
     jq -r '(.result // .data // [])[]? | [.type, .id, .sub_account_ext] | @tsv' <<<"$SBA" |
     while IFS=$'\t' read -r TYPE ID EXT; do
         [ -z "$TYPE" ] && continue
-        UTYPE=$(echo "$TYPE" | tr '[:lower:]' '[:upper:]')
-        echo "SUB_ACCOUNT_${UTYPE}=${ID}" >> "$TMP"
-        echo "SUB_ACCOUNT_EXT_${UTYPE}=${EXT}" >> "$TMP"
+        UPPER_TYPE=$(echo "$TYPE" | tr '[:lower:]' '[:upper:]')
+        echo "SUB_ACCOUNT_${UPPER_TYPE}=${ID}" >> "$TMP"
+        echo "SUB_ACCOUNT_EXT_${UPPER_TYPE}=${EXT}" >> "$TMP"
     done
     mv "$TMP" "$CREDS_FILE"
     echo "✅ Account IDs resolved."

@@ -15,6 +15,7 @@ function Request-Internal {
     $EnvVars = ConvertFrom-StringData (Get-Content $CredsFile -Raw)
     $AK = $EnvVars.FINHAY_API_KEY
     $AS = $EnvVars.FINHAY_API_SECRET
+    $UI = $EnvVars.USER_ID
     $BU = if ($EnvVars.FINHAY_BASE_URL) { $EnvVars.FINHAY_BASE_URL } else { $BaseUrlDefault }
     $TS = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
     $Nonce = [Guid]::NewGuid().ToString("n").Substring(0, 32)
@@ -26,7 +27,13 @@ function Request-Internal {
     $Sig = [BitConverter]::ToString($SigBytes).Replace("-", "").ToLower()
     $Url = "$BU$Endpoint"
     if ($Query) { $Url += "?$Query" }
-    $Headers = @{ "X-FH-APIKEY" = $AK; "X-FH-TIMESTAMP" = $TS; "X-FH-NONCE" = $Nonce; "X-FH-SIGNATURE" = $Sig }
+    $Headers = @{ 
+        "X-FH-APIKEY" = $AK; 
+        "X-FH-USER-ID" = $UI;
+        "X-FH-TIMESTAMP" = $TS; 
+        "X-FH-NONCE" = $Nonce; 
+        "X-FH-SIGNATURE" = $Sig 
+    }
     try {
         $Params = @{ Uri = $Url; Method = $Method; Headers = $Headers; ContentType = "application/json" }
         if ($Body) { $Params.Body = $Body }
