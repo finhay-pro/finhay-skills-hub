@@ -2,6 +2,9 @@
 
 set -e
 
+# Redirect file descriptor 3 to the terminal for interactive input
+exec 3< /dev/tty
+
 CREDS_DIR="$HOME/.finhay/credentials"
 CREDS_FILE="$CREDS_DIR/.env"
 
@@ -15,37 +18,38 @@ if [ ! -d "$CREDS_DIR" ]; then
 fi
 
 if [ -f "$CREDS_FILE" ]; then
-    read -p "File $CREDS_FILE already exists. Overwrite? (y/n): " confirm < /dev/tty
-    if [[ ! $confirm =~ ^[Yy]$ ]]; then
+    printf "File %s already exists. Overwrite? (y/n): " "$CREDS_FILE" >&2
+    read -r confirm <&3
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
         echo "Aborted."
         exit 0
     fi
 fi
 
-echo -n "Enter FINHAY_API_KEY (e.g., ak_test_...): "
-read api_key < /dev/tty
+printf "Enter FINHAY_API_KEY (e.g., ak_test_...): " >&2
+read -r api_key <&3
 
-echo -n "Enter FINHAY_API_SECRET: "
+printf "Enter FINHAY_API_SECRET: " >&2
 api_secret=""
-while IFS= read -r -s -n1 char < /dev/tty; do
-    if [[ -z $char ]]; then
-        printf "\n"
+while IFS= read -r -s -n1 char <&3; do
+    if [[ -z "$char" ]]; then
+        printf "\n" >&2
         break
     fi
-    if [[ $char == $'\177' || $char == $'\b' ]]; then
+    if [[ "$char" == $'\177' || "$char" == $'\b' ]]; then
         if [ -n "$api_secret" ]; then
             api_secret="${api_secret%?}"
-            printf "\b \b"
+            printf "\b \b" >&2
         fi
     else
         api_secret+="$char"
-        printf "*"
+        printf "*" >&2
     fi
 done
 
 default_url="https://open-api.fhsc.com.vn"
-echo -n "Enter FINHAY_BASE_URL [default: $default_url]: "
-read base_url < /dev/tty
+printf "Enter FINHAY_BASE_URL [default: %s]: " "$default_url" >&2
+read -r base_url <&3
 
 if [ -z "$base_url" ]; then
     base_url=$default_url
