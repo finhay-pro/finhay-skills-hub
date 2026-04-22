@@ -71,7 +71,8 @@ function Cmd-Infer {
     $NewContent += "USER_ID=$UserId"
     $Accounts = if ($SbaJson.result) { $SbaJson.result } else { $SbaJson.data }
     foreach ($acc in $Accounts) {
-        $Type = $acc.type.ToUpper()
+        if (-not $acc.type) { continue }
+        $Type = $acc.type.ToString().ToUpper()
         $NewContent += "SUB_ACCOUNT_$($Type)=$($acc.id)"
         $NewContent += "SUB_ACCOUNT_EXT_$($Type)=$($acc.sub_account_ext)"
     }
@@ -100,8 +101,8 @@ function Cmd-Sync {
     if (-not (Test-Path "skills")) { New-Item -ItemType Directory -Path "skills" | Out-Null }
     if (Test-Path $LocalSkillPath) { Remove-Item -Path $LocalSkillPath -Recurse -Force }
     Copy-Item -Path (Join-Path $Tmp $Skill) -Destination "skills" -Recurse -Force
-    New-Item -ItemType Symbollink -Path (Join-Path $LocalSkillPath "finhay.sh") -Target "../../finhay.sh" -Force | Out-Null
-    New-Item -ItemType Symbollink -Path (Join-Path $LocalSkillPath "finhay.ps1") -Target "../../finhay.ps1" -Force | Out-Null
+    New-Item -ItemType SymbolicLink -Path (Join-Path $LocalSkillPath "finhay.sh") -Target "../../finhay.sh" -Force | Out-Null
+    New-Item -ItemType SymbolicLink -Path (Join-Path $LocalSkillPath "finhay.ps1") -Target "../../finhay.ps1" -Force | Out-Null
     Remove-Item -Path $Tmp -Recurse -Force
     Write-Host "✅ $Skill synced."
 }

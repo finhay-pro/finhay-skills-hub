@@ -92,8 +92,9 @@ CMD_INFER() {
     jq -r '(.result // .data // [])[]? | [.type, .id, .sub_account_ext] | @tsv' <<<"$SBA" |
     while IFS=$'\t' read -r TYPE ID EXT; do
         [ -z "$TYPE" ] && continue
-        echo "SUB_ACCOUNT_${TYPE^^}=${ID}" >> "$TMP"
-        echo "SUB_ACCOUNT_EXT_${TYPE^^}=${EXT}" >> "$TMP"
+        UTYPE=$(echo "$TYPE" | tr '[:lower:]' '[:upper:]')
+        echo "SUB_ACCOUNT_${UTYPE}=${ID}" >> "$TMP"
+        echo "SUB_ACCOUNT_EXT_${UTYPE}=${EXT}" >> "$TMP"
     done
     mv "$TMP" "$CREDS_FILE"
     echo "✅ Account IDs resolved."
