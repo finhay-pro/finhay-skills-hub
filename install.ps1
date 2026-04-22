@@ -1,24 +1,18 @@
-# PowerShell script to clone finhay-pro/finhay-skills-hub and zip 2 skills subfolders
+$RepoUrl = "https://github.com/finhay-pro/finhay-skills-hub.git"
+$WorkDir = "_tmp_finhay_skills_hub"
+$CurDir = Get-Location
 
-$repoUrl = "https://github.com/finhay-pro/finhay-skills-hub.git"
-$workDir = "_tmp_finhay_skills_hub"
-$curDir = Get-Location
+Remove-Item -Path "$CurDir\finhay-market", "$CurDir\finhay-portfolio" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$CurDir\finhay-market.zip", "$CurDir\finhay-portfolio.zip" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$CurDir\$WorkDir" -Recurse -Force -ErrorAction SilentlyContinue
 
-# Remove old folders/zips if exist
-Remove-Item "$curDir/finhay-market.zip" -ErrorAction SilentlyContinue
-Remove-Item "$curDir/finhay-portfolio.zip" -ErrorAction SilentlyContinue
-Remove-Item "$curDir/$workDir" -Recurse -Force -ErrorAction SilentlyContinue
+git clone $RepoUrl "$CurDir\$WorkDir"
 
-# Clone toàn bộ repo về
-git clone $repoUrl "$curDir/$workDir"
-if (!(Test-Path "$curDir/$workDir/skills/finhay-market")) { Write-Error "finhay-market folder not found"; exit 1 }
-if (!(Test-Path "$curDir/$workDir/skills/finhay-portfolio")) { Write-Error "finhay-portfolio folder not found"; exit 1 }
+Set-Location "$CurDir\$WorkDir\skills"
+Compress-Archive -Path "finhay-market" -DestinationPath "$CurDir\finhay-market.zip" -Force
+Compress-Archive -Path "finhay-portfolio" -DestinationPath "$CurDir\finhay-portfolio.zip" -Force
 
-# Zip 2 thư mục skills cần thiết
-Compress-Archive -Path "$curDir/$workDir/skills/finhay-market" -DestinationPath "$curDir/finhay-market.zip" -Force
-Compress-Archive -Path "$curDir/$workDir/skills/finhay-portfolio" -DestinationPath "$curDir/finhay-portfolio.zip" -Force
+Set-Location "$CurDir"
+Remove-Item -Path "$CurDir\$WorkDir" -Recurse -Force
 
-# Cleanup
-Remove-Item "$curDir/$workDir" -Recurse -Force -ErrorAction SilentlyContinue
-
-Write-Host "Done. Created $curDir/finhay-market.zip and $curDir/finhay-portfolio.zip."
+Write-Host "Done. Created $CurDir\finhay-market.zip and $CurDir\finhay-portfolio.zip."

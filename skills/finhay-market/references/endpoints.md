@@ -1,6 +1,6 @@
 # Market Endpoints
 
-Signing: see [authentication.md](../_shared/authentication.md). Query params are not signed. No `USER_ID` needed.
+Signing: use `./finhay.sh request` (or `.\finhay.ps1 request`). Query params are not signed. No `USER_ID` needed.
 
 ## Errors
 

@@ -1,8 +1,8 @@
-# User Assets Summary
+# Portfolio Overview
 
 ## `GET /users/v4/users/{userId}/assets/summary`
 
-Retrieve account balance and asset overview for a user, including net asset value, product breakdown, cash, debt, and P&L.
+Retrieve a comprehensive summary of a user's entire wealth, including Net Asset Value (NAV), product breakdown, cash positions, debts, and profit/loss.
 
 ---
 
@@ -11,8 +11,8 @@ Retrieve account balance and asset overview for a user, including net asset valu
 ```yaml
 /users/v4/users/{userId}/assets/summary:
   get:
-    summary: Get user assets summary
-    operationId: getVNSCAssetsSummaryV4
+    summary: Get total portfolio overview
+    operationId: getTotalPortfolioOverview
     tags:
       - Account
     parameters:
@@ -50,10 +50,6 @@ Retrieve account balance and asset overview for a user, including net asset valu
 
 `data`
 
-### Config Required
-
-- `{userId}` — use `$USER_ID` from env
-
 ### Components
 
 ```yaml
@@ -64,7 +60,7 @@ components:
       properties:
         net_asset_value:
           type: number
-          description: Total net asset value
+          description: Total net asset value (Total Wealth)
         products:
           $ref: '#/components/schemas/ProductsSummary'
         money:
@@ -82,67 +78,67 @@ components:
           description: Total product value
         stock:
           type: number
-          description: Stock value
+          description: Total stock value
         fund:
           type: number
-          description: Fund value
+          description: Total fund value
         saving:
           type: number
           nullable: true
-          description: Saving amount
+          description: Total saving amount
         bond:
           type: number
-          description: Bond value
+          description: Total bond value
         hay0:
           type: number
           description: Hay0 NAV
         hay0_interest:
           type: number
-          description: Hay0 interest
+          description: Hay0 interest earned
         hay0_depositing:
           type: number
-          description: Hay0 amount being deposited
+          description: Hay0 amount in deposit queue
         hay0_withdrawing:
           type: number
-          description: Hay0 amount being withdrawn
+          description: Hay0 amount in withdrawal queue
 
     MoneySummary:
       type: object
       properties:
         total:
           type: number
-          description: Total cash
+          description: Total cash across all profiles
         ci_balance:
           type: number
-          description: Cash balance in account
+          description: Cash balance available in account
         ca_receiving:
           type: number
-          description: Dividend cash pending
+          description: Pending dividend cash
         emk_amt:
           type: number
-          description: Other blocked funds
+          description: Other blocked/earmarked funds
         receiving_amt:
           type: number
-          description: Cash to receive
+          description: Cash to receive from sold assets
         baldefovd:
           type: number
-          description: Available withdrawable amount
+          description: Total available withdrawable amount
 
     DebtSummary:
       type: object
       properties:
         total:
           type: number
-          description: Total debt
+          description: Total outstanding debt
         secure_amount:
           type: number
           description: Secured loan amount
         advance_amt:
           type: number
-          description: Advanced amount
+          description: Advanced cash amount
         sms_fee_amt:
           type: number
-          description: SMS fee amount
+          description: Accrued SMS fees
         cidepo_fee_acr:
           type: number
           description: CIDEPO fee accrual
@@ -166,11 +162,11 @@ components:
           description: Profit/loss amount
         pnl_rate:
           type: number
-          description: Profit/loss rate
+          description: Profit/loss rate (%)
 ```
 
 ### Notes
 
-- For Level 0/1 users, `stock`, `fund`, `bond` in `products` and `pnl` entries return `0`.
-- `saving` in `products` may be `null`.
-- Supports caching via `cache-control` query parameter; defaults to `CACHE`.
+- This is the **primary global endpoint** for checking a user's net worth and overall financial health.
+- For Level 0/1 users, some fields like `stock` or `fund` may return `0`.
+- Supports caching via `cache-control` query parameter (default: `CACHE`).
