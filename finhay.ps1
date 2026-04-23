@@ -11,12 +11,22 @@ function Show-Help {
 
 function Request-Internal {
     param($Method, $Endpoint, $Query, $Body)
-    if (-not (Test-Path $CredsFile)) { return }
-    $EnvVars = ConvertFrom-StringData (Get-Content $CredsFile -Raw)
-    $AK = $EnvVars.FINHAY_API_KEY
-    $AS = $EnvVars.FINHAY_API_SECRET
-    $UI = $EnvVars.USER_ID
-    $BU = if ($EnvVars.FINHAY_BASE_URL) { $EnvVars.FINHAY_BASE_URL } else { $BaseUrlDefault }
+    
+    $AK = $env:FINHAY_API_KEY
+    $AS = $env:FINHAY_API_SECRET
+    $BU = $env:FINHAY_BASE_URL
+    $UI = $env:USER_ID
+
+    if (Test-Path $CredsFile) {
+        $FileData = ConvertFrom-StringData (Get-Content $CredsFile -Raw)
+        if (-not $AK) { $AK = $FileData.FINHAY_API_KEY }
+        if (-not $AS) { $AS = $FileData.FINHAY_API_SECRET }
+        if (-not $BU) { $BU = $FileData.FINHAY_BASE_URL }
+        if (-not $UI) { $UI = $FileData.USER_ID }
+    }
+
+    if (-not $AK -or -not $AS) { return }
+    if (-not $BU) { $BU = $BaseUrlDefault }
     $TS = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
     $Nonce = [Guid]::NewGuid().ToString("n").Substring(0, 32)
     $Payload = "$TS`n$Method`n$Endpoint`n"
@@ -63,28 +73,61 @@ function Cmd-Auth {
 }
 
 function Cmd-Doctor {
-    if (Test-Path $CredsFile) { Write-Host "✅ Credentials: OK" } else { Write-Host "❌ Credentials: MISSING" }
+    $AK = $env:FINHAY_API_KEY
+    $AS = $env:FINHAY_API_SECRET
+    if (Test-Path $CredsFile) {
+        try {
+            $FileData = ConvertFrom-StringData (Get-Content $CredsFile -Raw)
+            if (-not $AK) { $AK = $FileData.FINHAY_API_KEY }
+            if (-not $AS) { $AS = $FileData.FINHAY_API_SECRET }
+        } catch {}
+    }
+
+    if ($AK -and $AS) { 
+        Write-Host "✅ Credentials: OK"
+        $DisplayBU = if ($BU) { $BU } else { $BaseUrlDefault }
+        Write-Host "🌐 Base URL: $DisplayBU"
+    } else { 
+        Write-Host "❌ Credentials: MISSING (Set environment variables or run auth)" 
+    }
     foreach ($c in @("curl", "jq", "openssl", "xxd")) {
         if (Get-Command $c -ErrorAction SilentlyContinue) { Write-Host "✅ $c: OK" } else { Write-Host "❌ $c: MISSING" }
     }
 }
 
 function Cmd-Infer {
-    $UserJson = Request-Internal -Method "GET" -Endpoint "/users/v1/users/me" | ConvertFrom-Json
+    $Data = Request-Internal -Method "GET" -Endpoint "/users/v1/users/me"
+    $UserJson = $Data | ConvertFrom-Json
     $UserId = $UserJson.data.user_id
-    if (-not $UserId) { return }
-    $SbaJson = Request-Internal -Method "GET" -Endpoint "/users/v1/users/$UserId/sub-accounts" | ConvertFrom-Json
-    $NewContent = Get-Content $CredsFile | Where-Object { $_ -notmatch "^(USER_ID|SUB_ACCOUNT_)" }
+    
+    if (-not $UserId) { 
+        Write-Error "ERROR: Could not resolve USER_ID. Check your credentials."
+        if ($Data) { Write-Host $Data }
+        return 
+    }
+    
+    $SbaData = Request-Internal -Method "GET" -Endpoint "/users/v1/users/$UserId/sub-accounts"
+    $SbaJson = $SbaData | ConvertFrom-Json
+    
+    if (-not (Test-Path $CredsDir)) { New-Item -ItemType Directory -Path $CredsDir | Out-Null }
+    $NewContent = if (Test-Path $CredsFile) { Get-Content $CredsFile | Where-Object { $_ -notmatch "^(USER_ID|SUB_ACCOUNT_)" } } else { @() }
+    
     $NewContent += "USER_ID=$UserId"
+    Write-Host "`$env:USER_ID=`"$UserId`""
+    
     $Accounts = if ($SbaJson.result) { $SbaJson.result } else { $SbaJson.data }
     foreach ($acc in $Accounts) {
         if (-not $acc.type) { continue }
         $Type = $acc.type.ToString().ToUpper()
-        $NewContent += "SUB_ACCOUNT_$($Type)=$($acc.id)"
-        $NewContent += "SUB_ACCOUNT_EXT_$($Type)=$($acc.sub_account_ext)"
+        $Id = $acc.id
+        $Ext = $acc.sub_account_ext
+        $NewContent += "SUB_ACCOUNT_$($Type)=$Id"
+        $NewContent += "SUB_ACCOUNT_EXT_$($Type)=$Ext"
+        Write-Host "`$env:SUB_ACCOUNT_$($Type)=`"$Id`""
+        Write-Host "`$env:SUB_ACCOUNT_EXT_$($Type)=`"$Ext`""
     }
     Set-Content -Path $CredsFile -Value ($NewContent -join "`n")
-    Write-Host "✅ Account IDs resolved."
+    Write-Host "✅ Account IDs resolved and saved to $CredsFile"
 }
 
 function Cmd-Sync {

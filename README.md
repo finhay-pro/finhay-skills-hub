@@ -26,6 +26,17 @@ npx skills add finhay-pro/finhay-skills-hub --skill finhay-portfolio
 
 ## Setup
 
+### Method 1: Environment Variables (Preferred for Stateless/Sandboxes)
+
+Set the following environment variables in your terminal or CI environment:
+
+```bash
+export FINHAY_API_KEY="your_api_key"
+export FINHAY_API_SECRET="your_api_secret"
+```
+
+### Method 2: Credentials File (Local Machine)
+
 ```bash
 ./finhay.sh auth
 ./finhay.sh infer
@@ -50,7 +61,7 @@ This writes the necessary credentials and IDs to `~/.finhay/credentials/.env`.
 
 - `bash`, `curl`, `openssl`, `jq`, `xxd` (macOS/Linux)
 - PowerShell 5.1+ (Windows)
-- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
+- Authentication: Either Environment Variables (set `FINHAY_API_KEY`, `FINHAY_API_SECRET`) or local file `~/.finhay/credentials/.env`.
 
 ## License
 

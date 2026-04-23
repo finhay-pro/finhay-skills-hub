@@ -18,12 +18,13 @@ _REQ() {
     local QUERY="${3:-}"
     local BODY="${4:-}"
     
-    [ -f "$CREDS_FILE" ] || { echo "ERROR: Credentials not found" >&2; return 1; }
-    
-    local AK=$(grep "^FINHAY_API_KEY=" "$CREDS_FILE" | cut -d'=' -f2-)
-    local AS=$(grep "^FINHAY_API_SECRET=" "$CREDS_FILE" | cut -d'=' -f2-)
-    local BU=$(grep "^FINHAY_BASE_URL=" "$CREDS_FILE" | cut -d'=' -f2-)
-    local UI=$(grep "^USER_ID=" "$CREDS_FILE" | cut -d'=' -f2-)
+    local AK="${FINHAY_API_KEY:-$(grep "^FINHAY_API_KEY=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+    local AS="${FINHAY_API_SECRET:-$(grep "^FINHAY_API_SECRET=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+    local BU="${FINHAY_BASE_URL:-$(grep "^FINHAY_BASE_URL=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+    local UI="${USER_ID:-$(grep "^USER_ID=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+
+    [ -z "$AK" ] && { echo "ERROR: FINHAY_API_KEY not found" >&2; return 1; }
+    [ -z "$AS" ] && { echo "ERROR: FINHAY_API_SECRET not found" >&2; return 1; }
     [ -z "$BU" ] && BU="https://open-api.fhsc.com.vn"
 
     local TS=$(( $(date -u +%s) * 1000 ))
@@ -79,27 +80,49 @@ EOF
 }
 
 CMD_DOCTOR() {
-    [ -f "$CREDS_FILE" ] && echo "✅ Credentials: OK" || echo "❌ Credentials: MISSING"
+    local AK="${FINHAY_API_KEY:-$(grep "^FINHAY_API_KEY=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+    local AS="${FINHAY_API_SECRET:-$(grep "^FINHAY_API_SECRET=" "$CREDS_FILE" 2>/dev/null | cut -d'=' -f2-)}"
+    
+    if [ -n "$AK" ] && [ -n "$AS" ]; then
+        echo "✅ Credentials: OK"
+        echo "🌐 Base URL: ${BU:-https://open-api.fhsc.com.vn}"
+    else
+        echo "❌ Credentials: MISSING (Set environment variables or run auth)"
+    fi
     for c in curl jq openssl xxd; do
         command -v $c >/dev/null 2>&1 && echo "✅ $c: OK" || echo "❌ $c: MISSING"
     done
 }
 
 CMD_INFER() {
-    USER_ID=$(_REQ GET /users/v1/users/me | jq -r '.data.user_id // empty')
+    local DATA=$(_REQ GET /users/v1/users/me)
+    USER_ID=$(echo "$DATA" | jq -r '.data.user_id // empty')
+    
+    if [ -z "$USER_ID" ]; then
+        echo "ERROR: Could not resolve USER_ID. Check your credentials." >&2
+        [ -n "$DATA" ] && echo "$DATA" >&2
+        return 1
+    fi
+
     SBA=$(_REQ GET "/users/v1/users/${USER_ID}/sub-accounts")
+    
+    [ ! -d "$CREDS_DIR" ] && mkdir -p "$CREDS_DIR"
     TMP=$(mktemp)
-    grep -vE '^(USER_ID|SUB_ACCOUNT_)' "$CREDS_FILE" > "$TMP" || true
+    [ -f "$CREDS_FILE" ] && grep -vE '^(USER_ID|SUB_ACCOUNT_)' "$CREDS_FILE" > "$TMP" || true
+    
     echo "USER_ID=$USER_ID" >> "$TMP"
+    
     jq -r '(.result // .data // [])[]? | [.type, .id, .sub_account_ext] | @tsv' <<<"$SBA" |
     while IFS=$'\t' read -r TYPE ID EXT; do
         [ -z "$TYPE" ] && continue
         UPPER_TYPE=$(echo "$TYPE" | tr '[:lower:]' '[:upper:]')
         echo "SUB_ACCOUNT_${UPPER_TYPE}=${ID}" >> "$TMP"
         echo "SUB_ACCOUNT_EXT_${UPPER_TYPE}=${EXT}" >> "$TMP"
+        echo "export SUB_ACCOUNT_${UPPER_TYPE}=\"$ID\""
+        echo "export SUB_ACCOUNT_EXT_${UPPER_TYPE}=\"$EXT\""
     done
     mv "$TMP" "$CREDS_FILE"
-    echo "✅ Account IDs resolved."
+    echo "✅ Account IDs resolved and saved to $CREDS_FILE"
 }
 
 CMD_SYNC() {

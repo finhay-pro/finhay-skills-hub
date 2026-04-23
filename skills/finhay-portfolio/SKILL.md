@@ -11,7 +11,7 @@ metadata:
 
 Read-only trading data via the Finhay Securities Open API.
 
-> **MANDATORY**: Ensure credentials are set. Run `./finhay.sh doctor` to verify. If IDs are missing, run `./finhay.sh infer`.
+> **MANDATORY**: Ensure credentials are set (via environment variables `FINHAY_API_KEY`/`FINHAY_API_SECRET` or via `./finhay.sh auth`). Run `./finhay.sh doctor` to verify. If IDs are missing, run `./finhay.sh infer`.
 
 ## Usage Examples
 
