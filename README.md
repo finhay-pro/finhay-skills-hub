@@ -26,34 +26,42 @@ npx skills add finhay-pro/finhay-skills-hub --skill finhay-portfolio
 
 ## Setup
 
-```bash
-mkdir -p ~/.finhay/credentials
-cat > ~/.finhay/credentials/.env << 'EOF'
-FINHAY_API_KEY=ak_test_YOUR_API_KEY_HERE
-FINHAY_API_SECRET=YOUR_64_CHAR_HEX_SECRET_HERE
-FINHAY_BASE_URL=https://open-api.fhsc.com.vn
-EOF
-chmod 600 ~/.finhay/credentials/.env
-```
+### Method 1: Environment Variables (Preferred for Stateless/Sandboxes)
 
-Then run once to resolve your user identity and sub-accounts:
+Set the following environment variables in your terminal or CI environment:
 
 ```bash
-./_shared/scripts/infer-sub-account.sh
+export FINHAY_API_KEY="your_api_key"
+export FINHAY_API_SECRET="your_api_secret"
 ```
 
-This writes `USER_ID`, `SUB_ACCOUNT_NORMAL`, and/or `SUB_ACCOUNT_MARGIN` to `~/.finhay/credentials/.env` — required for all trading endpoints.
+### Method 2: Credentials File (Local Machine)
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `FINHAY_API_KEY` | Yes | `ak_test_*` or `ak_live_*` |
-| `FINHAY_API_SECRET` | Yes | 64-character hex secret |
-| `FINHAY_BASE_URL` | No | Defaults to `https://open-api.fhsc.com.vn` |
+```bash
+./finhay.sh auth
+./finhay.sh infer
+```
+
+```powershell
+.\finhay.ps1 auth
+.\finhay.ps1 infer
+```
+
+This writes the necessary credentials and IDs to `~/.finhay/credentials/.env`.
+
+| Command | Description |
+|---------|-------------|
+| `auth` | Configure API credentials |
+| `doctor` | Verify system dependencies and setup |
+| `infer` | Resolve user identity and trading sub-accounts |
+| `request` | Execute signed API requests |
+| `sync` | Update local skill definitions |
 
 ## Prerequisites
 
-- `bash`, `curl`, `openssl` (macOS/Linux) hoặc PowerShell 5.1+ (Windows)
-- `~/.finhay/credentials/.env` with `FINHAY_API_KEY` and `FINHAY_API_SECRET`
+- `bash`, `curl`, `openssl`, `jq`, `xxd` (macOS/Linux)
+- PowerShell 5.1+ (Windows)
+- Authentication: Either Environment Variables (set `FINHAY_API_KEY`, `FINHAY_API_SECRET`) or local file `~/.finhay/credentials/.env`.
 
 ## License
 
