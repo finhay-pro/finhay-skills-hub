@@ -40,7 +40,7 @@ Versions are fixed per endpoint — do not change them:
 | # | Method | Path | Params | Res key | Detail |
 |---|--------|------|--------|---------|--------|
 | 1 | GET | `/trading/accounts/{subAccountId}/summary` | — | `result` | [detail](./endpoints/account-summary.md) |
-| 2 | GET | `/users/v4/users/{userId}/assets/summary` | `cache-control` | `data` | [detail](./endpoints/assets.md) |
+| 2 | GET | `/users/v3/users/{userId}/assets/summary` | `cache-control` | `data` | [detail](./endpoints/assets.md) |
 
 ## Orders
 

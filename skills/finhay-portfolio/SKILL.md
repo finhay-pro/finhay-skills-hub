@@ -32,7 +32,7 @@ Always use `request.sh`. Resolve all path variables (`{subAccountId}`, `{userId}
 source ~/.finhay/credentials/.env
 
 ./_shared/scripts/request.sh GET "/trading/accounts/$SUB_ACCOUNT_NORMAL/summary"
-./_shared/scripts/request.sh GET "/users/v4/users/$USER_ID/assets/summary"
+./_shared/scripts/request.sh GET "/users/v3/users/$USER_ID/assets/summary"
 ./_shared/scripts/request.sh GET "/trading/sub-accounts/$SUB_ACCOUNT_MARGIN/orders" "fromDate=2024-01-01&toDate=2024-01-31"
 ./_shared/scripts/request.sh GET "/trading/v2/sub-accounts/$SUB_ACCOUNT_NORMAL/portfolio"
 ./_shared/scripts/request.sh GET "/trading/pnl-today/$USER_ID"
@@ -50,7 +50,7 @@ When `{subAccountId}` is required, ask the user whether to use NORMAL or MARGIN,
 | Endpoint | Use when | Path param | Query params | Res key |
 |----------|----------|------------|--------------|---------|
 | `/trading/accounts/{subAccountId}/summary` | Account detail, margin, debt | `{subAccountId}` → ask user | — | `result` |
-| `/users/v4/users/{userId}/assets/summary` | Balance, total assets, NAV | `{userId}` → `$USER_ID` | `cache-control` (default `CACHE`) | `data` |
+| `/users/v3/users/{userId}/assets/summary` | Balance, total assets, NAV | `{userId}` → `$USER_ID` | `cache-control` (default `CACHE`) | `data` |
 | `/trading/sub-accounts/{subAccountId}/orders` | Order history | `{subAccountId}` → ask user | `fromDate`, `toDate` (required) | `result` |
 | `/trading/v1/accounts/{subAccountId}/order-book` | Today's order book | `{subAccountId}` → ask user | — | `result` |
 | `/trading/v1/accounts/{subAccountId}/order-book/{orderId}` | Single order detail | `{subAccountId}` → ask user, `{orderId}` | — | `data` |
@@ -61,7 +61,7 @@ When `{subAccountId}` is required, ask the user whether to use NORMAL or MARGIN,
 
 Path versions (`v1`, `v2`, `v4`, `v5`) are fixed. Always use the exact versions listed above.
 For order history, `fromDate` and `toDate` are required and must be in `YYYY-MM-DD` format.
-For account balance alway use combination of the `/users/v4/users/{userId}/assets/summary` & `/trading/accounts/{subAccountId}/summary` endpoints, to get the most accurate total assets and NAV.
+For account balance alway use combination of the `/users/v3/users/{userId}/assets/summary` & `/trading/accounts/{subAccountId}/summary` endpoints, to get the most accurate total assets and NAV.
 
 ### Parameter rules
 

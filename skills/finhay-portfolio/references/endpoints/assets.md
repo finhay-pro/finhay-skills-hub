@@ -1,6 +1,6 @@
 # User Assets Summary
 
-## `GET /users/v4/users/{userId}/assets/summary`
+## `GET /users/v3/users/{userId}/assets/summary`
 
 Retrieve account balance and asset overview for a user, including net asset value, product breakdown, cash, debt, and P&L.
 
@@ -9,7 +9,7 @@ Retrieve account balance and asset overview for a user, including net asset valu
 ### OpenAPI Spec
 
 ```yaml
-/users/v4/users/{userId}/assets/summary:
+/users/v3/users/{userId}/assets/summary:
   get:
     summary: Get user assets summary
     operationId: getVNSCAssetsSummaryV4
