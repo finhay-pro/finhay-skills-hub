@@ -60,6 +60,8 @@ When `{subAccountId}` is required, ask the user whether to use NORMAL or MARGIN,
 | `/trading/market/session` | Market open/close | — | `exchange` (e.g. `HOSE`) | `result` |
 
 Path versions (`v1`, `v2`, `v4`, `v5`) are fixed. Always use the exact versions listed above.
+For order history, `fromDate` and `toDate` are required and must be in `YYYY-MM-DD` format.
+For account balance alway use combination of the `/users/v4/users/{userId}/assets/summary` & `/trading/accounts/{subAccountId}/summary` endpoints, to get the most accurate total assets and NAV.
 
 ### Parameter rules
 
